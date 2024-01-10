@@ -29,8 +29,8 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
       // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-      user: process.env.EMAIL,
-      pass: process.env.AUTH_PASSWORD,
+    user: process.env.EMAIL,
+    pass: process.env.AUTH_PASSWORD,
     },
 });
 
@@ -39,7 +39,7 @@ const corsOptions = {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,  // Enable cookies and authentication headers
 };
-  
+
 app.use(cors(corsOptions));
 
 
@@ -78,14 +78,25 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
         // }
 
         // generate a random integer ticket number within the range of minTicketNumber and maxTicketNumber
-
+         generateRandomTicketNumber = Math.floor(Math.random() * (mex - min + 1)) + min;
+        
         //go to Ticket.js first to create your Ticket Schema
         
         // create a new ticket document that contains the customer "email", "name", "ticket_number", and "expiration_date"
         //set the "expiration_date" of the ticket to 1 month after today
-        
+        const newTicket = new Ticket({
+            email: customer_details.email,
+            name: customer_details.name,
+            ticket_number: randomTicketNumber,
+            experiation_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        });
         //dont forget to save the ticket and put it in a variable called "savedTicket" use await
-        
+        try{
+            const savedTicket = await newTicket.save();
+            console.log("Ticket saved:", savedTicket)
+        } catch (error){
+            console.error("Error saving ticket:", error.message)
+        }
         
         await transporter.sendMail({
             from: process.env.EMAIL,

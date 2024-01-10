@@ -1,25 +1,6 @@
 const mongoose = require("mongoose")
 
 
-const userSchema = new mongoose.userSchema({
-    name: {
-        type:String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    expiration_date: {
-        type: Date,
-        required: true,
-    },
-    ticket_number: {
-        type: String,
-        required: true,
-    }
-})
 //create a mongoose schema called "TicketSchema"
 // add a field called "name" that is of type String as is required
 // add a field called "email" that is of type String as is required
