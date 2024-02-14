@@ -28,15 +28,16 @@ export default function CheckIn(){
 
     return(
         <>
-        {popUpActive ? <TicketConfirmation message={message} setActive={setPopUpActice} success={success}></TicketConfirmation>: null}
-        <div className=" h-screen bg-primary ">
+        
+        <div className=" h-screen bg-primary flex items-center justify-center ">
+            {popUpActive ? <TicketConfirmation message={message} setActive={setPopUpActice} success={success}></TicketConfirmation>: null}
             <form onSubmit={(e)=> verifyTicket(e)} className="p-24 font-poppins text-secondary flex flex-col justify-center items-center text-center gap-16">
                 <h1 className=" text-6xl font-bold ">Ticket Number</h1>
                 <div className="relative h-fit items-center flex ">
                     <h1 className="z-20 absolute px-4 text-primary font-bold text-4xl ">T-</h1>
                     <input name = "ticketNumber" className="text-center w-[600px] h-[65px] rounded-sm bg-secondary font-bold p-4 px-16 text-primary text-3xl"></input>
                 </div>
-                <button type="submit" className="rounded-sm h-[75px] w-[400px] bg-complementary text-secondary font-bold text-2xl hover:bg-secondary hover:text-primary duration-500 hover:scale-105">Check In</button>
+                <button type="submit" className="rounded-sm h-[75px] w-[400px] bg-complementary text-primary font-bold text-2xl hover:bg-secondary hover:text-primary duration-500 hover:scale-105">Check In</button>
             </form>
         </div>
         </>
