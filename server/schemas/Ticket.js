@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 
+
 const TicketSchema = new mongoose.Schema({
     title: {
         type:String,
@@ -60,6 +61,7 @@ const TicketSchema = new mongoose.Schema({
         }
     }
 })
+
 
 const Tickets = mongoose.models?.Tickets || mongoose.model("Tickets", TicketSchema)
 module.exports = Tickets
