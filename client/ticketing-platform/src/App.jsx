@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard"
 import CheckIn from "./pages/CheckIn"
 import Navbar from "./components/Navbar" 
 import SignUp from "./pages/SignUp" 
+import Login from "./pages/Login"
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route exact path = "/" Component={Dashboard}></Route>
         <Route path = "/checkIn" Component={CheckIn}></Route>
         <Route path = "/signup" Component={SignUp}></Route>
+        <Route path="/login" Component={Login}></Route>
       </Routes>
     </BrowserRouter>
     </>
