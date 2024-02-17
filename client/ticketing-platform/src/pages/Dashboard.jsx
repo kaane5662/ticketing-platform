@@ -1,11 +1,9 @@
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios"
-import { motion, stagger } from "framer-motion"
-import Success from "../components/Success"
-import Failure from "../components/Failure"
+import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import Popup from "../components/Popup"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCheck, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
 
 const photos = ["concert1.jpg", "concert2.jpeg", "concert3.jpg", "concert4.jpg", "concert5.jpg"]
 
@@ -54,6 +52,7 @@ export default function Dashboard(){
         
         <div className=" h-screen bg-primary text-secondary font-poppins p-16 items-center flex ">
             {popUpActive ? <Popup setActive={setPopUpActice} success = {success}></Popup>: null}
+           
             <motion.div 
             initial={{
                 opacity: 0,
