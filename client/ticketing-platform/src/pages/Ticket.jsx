@@ -9,7 +9,7 @@ import { faCheck, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
 
 const photos = ["concert1.jpg", "concert2.jpeg", "concert3.jpg", "concert4.jpg", "concert5.jpg"]
 
-export default function Dashboard(){
+export default function Ticket(){
 
     const [popUpActive, setPopUpActice] = useState(false)
     const [success, setSuccess] = useState(false)

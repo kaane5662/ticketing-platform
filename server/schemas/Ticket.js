@@ -22,6 +22,10 @@ const TicketSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    icon: {
+        type:String,
+        required: true
+    },
     pictures: {
         type: Array,
         required: true
@@ -43,14 +47,6 @@ const TicketSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        latitude: {
-            type: Number,
-            required: true
-        },
-        longitude: {
-            type: Number,
-            required: true
-        },
         line: {
             type: String,
             required: true
@@ -59,6 +55,20 @@ const TicketSchema = new mongoose.Schema({
             type: String,
             required: true
         }
+    },
+    event: {
+        start_time: {
+            type:String, 
+            required: true
+        },
+        end_time: {
+            type:String, 
+            required: true
+        },
+        day: {
+            type:String, 
+            required: true
+        },
     }
 })
 

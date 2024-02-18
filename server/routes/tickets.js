@@ -4,9 +4,14 @@ const Ticket = require("../schemas/Ticket")
 const Profile = require("../schemas/Profile")
 const { verifyToken } = require("../jwtMiddleware")
 const stripe = require("stripe")(process.env.STRIPE_KEY)
+const {uploadEventIcons, uploadEventImages} = require("../uploadMiddleware")
+const multer = require("multer")
 
-router.post("/", verifyToken ,(req,res)=>{
-    const {title, description,stock,price,event_type,tags, line, state, postal_code, latitude, longitude} = req.body
+//protected route
+router.post("/" ,[ [uploadEventIcons.single("event_icon"), uploadEventImages.array("event_images",5)]],async(req,res)=>{
+    const {title, description,stock,price,line,state,postal_code,event_type,tags, start_time, end_time, date} = req.body
+    
+   
     const matchingProfile = Profile.findById(req.user._id)
     if(matchingProfile.stripe_boarded == null || matchingProfile.stripe_connected_id == null) return res.status(500).json({message: "Not a boarded account"})
     try{
@@ -17,12 +22,18 @@ router.post("/", verifyToken ,(req,res)=>{
             price,
             event_type,
             tags,
+            seller_id: req.user.id,
+            icon: req.files["event_icon"],
+            pictures: req.files["event_images"].map((event_image, index)=>{return event_image.path}),
             address:{
                 line,
                 state,
                 postal_code,
-                latitude,
-                longitude
+            },
+            event: {
+                start_time,
+                end_time,
+                day: date
             }
         })
         const savedTicket = newTicket.save()

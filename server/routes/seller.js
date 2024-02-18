@@ -4,6 +4,7 @@ const {verifyToken} = require("../jwtMiddleware")
 const Profile = require("../schemas/Profile")
 require("dotenv").config()
 const stripe = require("stripe")(process.env.STRIPE_KEY)
+const EventTypes = require("../fields/EventTypes")
 
 //should be protected also
 router.post("/verify",async (req,res)=>{
@@ -101,7 +102,16 @@ router.get("/check", async (req,res)=>{
     //if(!User.stripe_boarded){
         // return res.status(200).json({url: "/seller/boarding"})
     //}
-    // return res.status(200).json({url:"/seller"})
+    // return res.status(200).json({url:"/seller"}) 
+})
+
+//should be protected
+router.get("/create", async(req,res)=>{
+    // const User = await Profile.findById(req.user.id)
+    // if(User.stripe_connected_id == null || User.stripe_boared == false){
+        // return res.status(500).json({url:"/checkseller"})
+    // }
+    return res.status(200).json({EventTypes})
 })
 
 
