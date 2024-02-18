@@ -28,7 +28,7 @@ export default function Login() {
 
                     <div>
                         <button type="submit" className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-primary hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Sign in
+                            Login
                         </button>
                     </div>
                 </form>
