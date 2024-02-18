@@ -1,5 +1,7 @@
+
+
 export default function Login(){
     return(
-        <h1>Login</h1>
+        <h1 className="text-4xl">Login</h1>
     )
 }

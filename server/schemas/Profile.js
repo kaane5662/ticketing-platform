@@ -18,13 +18,35 @@ const ProfileSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    verified: {
+    stripe_identity_verified: {
         type: Boolean,
         default: false
     },
     stripe_boarded:{
         type:Boolean,
         default: false
+    },
+    recent_stripe_verification_session: {
+        type: String,
+        default: null
+    },
+    business:{
+        business_name:{
+            type:String,
+            default: null
+        },
+        business_email:{
+            type:String,
+            default: null 
+        },
+        first_name: {
+            type:String,
+            default: null
+        },
+        last_name: {
+            type:String,
+            default:null
+        }
     }
 })
 

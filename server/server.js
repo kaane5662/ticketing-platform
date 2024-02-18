@@ -4,6 +4,7 @@ const mongoose = require("mongoose")
 const cors = require("cors")
 const Transactions = require("./schemas/Transactions")
 const nodemailer = require("nodemailer")
+const qr = require("qrcode")
 const app = express()
 require("dotenv").config()
 const stripe = require("stripe")(process.env.STRIPE_KEY)
@@ -17,6 +18,7 @@ app.use(passport.initialize());
 
 //session stuff
 const session = require("express-session")
+const Profile = require("./schemas/Profile")
 app.use(session({
     secret: 'your-secret-key', // Replace with a strong, randomly generated string
     resave: false,
@@ -105,8 +107,10 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
         // }
 
         // generate a random integer ticket number within the range of minTicketNumber and maxTicketNumber
-         generateRandomTicketNumber = Math.floor(Math.random() * (mex - min + 1)) + min;
-        
+        generateRandomTicketNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+        qr.toDataURL(generateRandomTicketNumber, (err, url) => {
+                
+        });
         //go to Ticket.js first to create your Ticket Schema
         
         // create a new ticket document that contains the customer "email", "name", "ticket_number", and "expiration_date"
@@ -130,8 +134,20 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
         
     }
 
+    //verification completed
+    if(event.type == "identity.verification_session.verified"){
+        // console.log(dataObject)
+        dataObject = event.data.object;
+        const {metadata} = dataObject;
+        await 
+        console.log(dataObject)
+        console.log("Verification has been completed")
+
+    }
+
     res.send();
 })
+
 
 
 app.use(express.json())
@@ -139,7 +155,7 @@ app.use(express.json())
 //routes
 app.use("/profiles", require("./routes/profiles"))
 app.use("/tickets", require("./routes/tickets"))
-// app.use("/seller", require("./routes/seller"))
+app.use("/seller", require("./routes/seller"))
 
 app.post("/purchase", async (req, res)=>{
     const {quantity} = req.body
