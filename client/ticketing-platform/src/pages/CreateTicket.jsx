@@ -3,10 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios"
 import {useNavigate} from "react-router-dom"
+import PlaceAutocomplete from "../components/PlaceAutocomplete";
 
 
 export default function CreateTicket(){
     const [selectedFiles, setSelectedFiles] = useState([])
+    const [tags, setTags] = useState([])
     const [eventIcon, setEventIcon] = useState()
     const [EventConstants, setEventConstants] = useState({})
     const navigate = useNavigate()
@@ -19,8 +21,14 @@ export default function CreateTicket(){
         Array.from(selectedFiles).forEach((selectedFile, index)=>{
             formData.append("event_images", selectedFile)
         })
+        formData.delete("tags")
+        Array.from(tags).forEach((tag, index) => {
+            // console.log(tag)
+            formData.append(`tags`, tag);
+        });
+        
         // console.log(formData.get("event_images"))
-        // console.log(formData.get("event_icon"))
+        console.log(formData.get("tags"))
         axios.post(`${import.meta.env.VITE_SERVER}/tickets`,formData,{
             withCredentials: true,
             headers: {
@@ -38,7 +46,8 @@ export default function CreateTicket(){
 
     const checkAuthority = ()=>{
         axios.get(`${import.meta.env.VITE_SERVER}/seller/create`).then((response)=>{
-            console.log(response.data)
+            console.log(response.data.EventTypes)
+
             setEventConstants(response.data)
         }).catch((error)=>{
             error.response.data?.url ? navigate(error.response.data.url) : null
@@ -62,7 +71,8 @@ export default function CreateTicket(){
         const updatedFiles = selectedFiles.filter(file => file !== fileToRemove);
         setSelectedFiles(updatedFiles);
     };
-    
+
+
     useEffect(()=>{
         checkAuthority()
     },[])
@@ -114,9 +124,36 @@ export default function CreateTicket(){
                     </div>
                 </div>
                 
-                <h3 className="text-lg -mb-4">Event address</h3>
-                <input name="address" placeholder="Enter address" className="text-primary h-[50px] bg-secondary w-[100%] rounded-sm p-2"></input>
+                <PlaceAutocomplete/>
+
                 
+                    
+                <h3 className="text-lg -mb-4">Event type</h3>
+                <select className="text-primary h-[50px] bg-secondary w-[250px] rounded-sm p-2" name="event_type">
+                    {EventConstants?.EventTypes?.map((eventType, index)=>{
+                        return(
+
+                            <option value={eventType} key={index} className="">{eventType}</option>
+                        )
+                    })}
+                </select>
+                    
+                    
+                <h3 className="text-lg -mb-4">Event tags</h3>
+                <div className="flex gap-8 flex-wrap">
+                    {tags.map((tag, index)=>{
+                        return (
+                            <button onClick={()=> setTags(tags.filter(tempTag=>tag != tempTag))} key={index} className="w-fit px-4 py-2 h-fit bg-complementary hover:bg-red-500 hover:scale-105 duration-300 rounded-full text-primary">{tag}</button>
+                        )
+                    })}
+                </div>
+                <input onKeyDown={(e)=> {if(e.key == " "|| e.key == "Enter") {setTags([...tags, e.target.value]); e.target.value = ""} }} className="text-primary h-[50px] w-[100%] bg-secondary rounded-sm p-2 border-r-4 border-r-complementary" name="tags">
+                </input>
+            
+                
+                
+
+
                 <h3 className="text-lg -mb-4">Event icon</h3>
                 <div className="w-[700px] bg-secondary bg-opacity-10 rounded-sm overflow-hidden h-[500px] relative">
                     <img src={eventIcon? URL.createObjectURL(eventIcon):""} className="w-[700px] h-[500px] object-scale-down"></img>
