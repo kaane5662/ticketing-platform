@@ -10,6 +10,7 @@ import VerifySeller from "./pages/VerifySeller"
 import BoardSeller from "./pages/BoardSeller"
 import CreateTicket from "./pages/CreateTicket"
 import Ticket from "./pages/Ticket"
+import Scan from "./pages/Scan"
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/seller/verify" Component={VerifySeller}></Route>
         <Route path="/seller/boarding" Component={BoardSeller}></Route>
         <Route path = "/seller/create" Component={CreateTicket  }></Route>
+        <Route path = "/scan/:id" Component = {Scan}></Route>
       </Routes>
     </BrowserRouter>
     </>

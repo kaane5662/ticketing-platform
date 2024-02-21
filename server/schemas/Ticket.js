@@ -22,8 +22,16 @@ const TicketSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    published: {
+        type: Boolean,
+        default: false
+    },
     icon: {
         type:String,
+        required: true
+    },
+    checkin_code: {
+        type: Number,
         required: true
     },
     pictures: {

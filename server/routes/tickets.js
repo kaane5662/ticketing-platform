@@ -6,12 +6,14 @@ const { verifyToken } = require("../jwtMiddleware")
 const stripe = require("stripe")(process.env.STRIPE_KEY)
 const {uploadEventIcons, uploadEventImages} = require("../uploadMiddleware")
 const multer = require("multer")
-
+const Transactions = require("../schemas/Transactions")
+const crypto = require("crypto")
+const generateCheckInCode = require("../helpers/generateCheckInCode")
 //protected route
 router.post("/" ,[ [uploadEventIcons.single("event_icon"), uploadEventImages.array("event_images",5)]],async(req,res)=>{
     const {title, description,stock,price,line,state,postal_code,event_type,tags, start_time, end_time, date} = req.body
     
-   
+    //edit user id
     const matchingProfile = Profile.findById(req.user._id)
     if(matchingProfile.stripe_boarded == null || matchingProfile.stripe_connected_id == null) return res.status(500).json({message: "Not a boarded account"})
     try{
@@ -22,6 +24,7 @@ router.post("/" ,[ [uploadEventIcons.single("event_icon"), uploadEventImages.arr
             price,
             event_type,
             tags,
+            checkin_code: generateCheckInCode(),
             seller_id: req.user.id,
             icon: req.files["event_icon"],
             pictures: req.files["event_images"].map((event_image, index)=>{return event_image.path}),
@@ -88,6 +91,46 @@ router.get("/:id", async(req,res)=>{
     }catch(error){
         return res.status(500).json({message: error.message})
     }
+})
+
+router.get("/checkin/:id", async(req,res)=>{
+    const {id} = req.params
+    const {code} = req.body
+    try{
+        const matchingTicketWithCode = await Ticket.findOne({_id:id, checkin_code:code})
+        if(matchingTicketWithCode == null){
+            res.status(500).json({message: "Invalid code"})
+        }
+        return res.status(201).json({message: "Check in success"})
+        
+    }catch(error){
+        console.log(error.message)
+        res.status(500).json({message:error.message})
+    }
+    
+})
+
+router.post("/checkin/:id", async(req,res)=>{
+    const {id} = req.params
+    const {ticket_number} = req.body
+    //warning: no check to see if the checking user is actually pat of the group
+    try{
+        const matchingTicketNumber = await Transactions.findOne({ticket_number, ticket_id: id})
+        if(matchingTicketNumber == null ){
+            res.status(500).json({message: "Invalid code"})
+        }
+        if(matchingTicketNumber.expiration_date <= Date.now()){
+            res.status(500).json({message: "Ticket has expired"})
+        }
+        matchingTicketNumber.expiration_date = Date.now()
+        await matchingTicketNumber.save()
+        return res.status(201).json({message: "Check in success"})
+        
+    }catch(error){
+        console.log(error.message)
+        res.status(500).json({message:error.message})
+    }
+    
 })
 
 
