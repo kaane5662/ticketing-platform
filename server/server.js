@@ -136,13 +136,38 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
 
     //verification completed
     if(event.type == "identity.verification_session.verified"){
-        // console.log(dataObject)
         dataObject = event.data.object;
-        const {metadata} = dataObject;
-        await 
         console.log(dataObject)
+        const {metadata} = dataObject;
+        await Profile.findByIdAndUpdate(metadata._id, {stripe_identity_verified: true})
+        console.log(dataObject)
+        res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
         console.log("Verification has been completed")
 
+    }
+    //connect capabilities updated
+    if (event.type == 'account.updated') {
+        const account = event.data.object;
+        // const {metadata} = account;
+        console.log('Account Updated:', account.id);
+        console.log('Capabilities:', account.capabilities);
+        if(acccount.capabilities && account.capabilities["card_payments"] && account.capabilities["transfers"]){
+            await Profile.findOneAndUpdate({stripe_connected_id: account.id}, {stripe_boarded: true});
+            return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
+        }
+        console.log(account.capabilities)
+        
+        // Here you can perform actions based on the updated capabilities
+      }
+
+    if(event.type == 'identity.verification_session.processing'){
+        return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`);
+    }
+    // Handle transfer.paid event(mainly for sellers cashing out)
+    if (event.type === 'transfer.paid') {
+        const transfer = event.data.object;
+        console.log('Transfer completed:', transfer);
+        // Handle transfer completion logic here
     }
 
     res.send();
