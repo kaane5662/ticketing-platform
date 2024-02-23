@@ -1,16 +1,17 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import Navbar from "./components/Navbar"
 import "./index.css"
-import CheckIn from "./pages/CheckIn"
-import Navbar from "./components/Navbar" 
-import SignUp from "./pages/SignUp" 
-import Login from "./pages/Login"
-import SellerSignUp from "./pages/SellerSignUp"
-import CheckSeller from "./pages/CheckSeller"
-import VerifySeller from "./pages/VerifySeller"
 import BoardSeller from "./pages/BoardSeller"
+import CheckIn from "./pages/CheckIn"
+import CheckSeller from "./pages/CheckSeller"
 import CreateTicket from "./pages/CreateTicket"
-import Ticket from "./pages/Ticket"
+import Landing from "./pages/Landing"
+import Login from "./pages/Login"
 import Scan from "./pages/Scan"
+import SellerSignUp from "./pages/SellerSignUp"
+import SignUp from "./pages/SignUp"
+import Ticket from "./pages/Ticket"
+import VerifySeller from "./pages/VerifySeller"
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
     <BrowserRouter>
       <Navbar></Navbar>
       <Routes>
+        <Route path = "/" Component={Landing}></Route>
         <Route path = "/ticket/:id" Component={Ticket}></Route>
         <Route path = "/checkIn" Component={CheckIn}></Route>
         <Route path = "/signup" Component={SignUp}></Route>
