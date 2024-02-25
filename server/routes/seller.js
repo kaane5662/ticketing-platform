@@ -101,7 +101,7 @@ router.get("/boarding", verifyToken,async(req,res)=>{
         }
     }catch(error){
         console.log(error.message)
-        return res.status(500).json({message:error.message})
+        return res.status(500).json({message: error.message})
     }
 })
 // //protected route       
