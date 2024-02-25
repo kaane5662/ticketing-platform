@@ -35,7 +35,7 @@ export default function CheckIn(){
                 <h1 className=" text-6xl font-bold ">Ticket Number</h1>
                 <div className="relative h-fit items-center flex ">
                     <h1 className="z-20 absolute px-4 text-primary font-bold text-4xl ">T-</h1>
-                    <input name = "ticketNumber" className="text-center w-[600px] h-[65px] rounded-sm bg-secondary font-bold p-4 px-16 text-primary text-3xl"></input>
+                    <input name = "ticketNumber" className="text-center w-[600px] h-[65px] rounded-sm bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 font-bold p-4 px-16 text-3xl"></input>
                 </div>
                 <button type="submit" className="rounded-sm h-[75px] w-[400px] bg-complementary text-primary font-bold text-2xl hover:bg-secondary hover:text-primary duration-500 hover:scale-105">Check In</button>
             </form>

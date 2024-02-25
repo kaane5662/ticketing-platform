@@ -7,10 +7,7 @@ const mongoose = require("mongoose")
 // add a field called "ticket_number" that is of type String as is required
 
 const TransactionSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
+    
     email: {
         type: String,
         required: true
@@ -30,8 +27,16 @@ const TransactionSchema = new mongoose.Schema({
     ticket_id: {
         type: String,
         required: true
+    },
+    amount: {
+        type: Number, 
+        required: true
+    },
+    ticket_title: {
+        type: String,
+        required: true
     }
 })
 
-const Transactions = mongoose.Models?.Transactions || mongoose.model("Tickets", TransactionSchema)
+const Transactions = mongoose.Models?.Transactions || mongoose.model("Transactions", TransactionSchema)
 module.exports = Transactions

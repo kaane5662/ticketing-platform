@@ -9,27 +9,34 @@ const generateToken = (user) => {
             _id: user._id.toString(),
             ...user._doc
         }
-        , process.env.SECRET_JWT, {expiresIn: "1h"}); // Token expires in 1 hour
+        , process.env.SECRET_JWT, {expiresIn: "5h"}); // Token expires in 1 hour
 };
 
 
 const verifyToken = (req, res, next) => {
 
-    req.user = {}
-    req.user._id = "65d5428edf2c053b57e72ef2"
-    return next()
-    const token = req.header('x-auth-token');
-
+    // req.user = {}
+    // req.user._id = "65d5428edf2c053b57e72ef2"
+    // return next()
+    const token = req.cookies?.token;
+    // console.log(token)
     if (!token) {
-        return res.status(401).json({ message: 'No token, authorization denied' });
+        // console.log("Middleware do you work!")
+        return res.status(401).json({ url: '/login' });
+        // return res.redirect(`${process.env.CLIENT_DOMAIN}/login`)
+    
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded.user;
+        const decoded = jwt.verify(token, process.env.SECRET_JWT);
+        req.user = decoded;
+        // console.log(req.user)
         next();
     } catch (err) {
-        res.status(401).json({ message: 'Token is not valid' });
+        console.log(err)
+        // res.status(401).json({ message: 'Token is not valid' });
+        return res.status(403).json({url:`/login`});
+        return
     }
 };
 

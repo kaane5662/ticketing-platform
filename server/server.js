@@ -4,34 +4,35 @@ const mongoose = require("mongoose")
 const cors = require("cors")
 const Transactions = require("./schemas/Transactions")
 const nodemailer = require("nodemailer")
-const qr = require("qrcode")
+const qr = require("qr-image")
 const app = express()
+const path = require("path")
 require("dotenv").config()
 const stripe = require("stripe")(process.env.STRIPE_KEY)
+const cookieParser = require('cookie-parser');
+const {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation} = require("./helpers/emailer")
 
 
 
 //authenication stuff
 const passport = require("./auth")
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 
 //session stuff
 const session = require("express-session")
 const Profile = require("./schemas/Profile")
-app.use(session({
-    secret: 'your-secret-key', // Replace with a strong, randomly generated string
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true if your application is served over HTTPS
-}));
-app.use(passport.session());
-
-
-
-
-const minTicketNumber = 10000
-const maxTicketNumber = 10000000
+const generateTicketNumber = require("./helpers/generateTicketNumber")
+const Ticket = require("./schemas/Ticket")
+// app.use(session({
+//     secret: 'your-secret-key', // Replace with a strong, randomly generated string
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false } // Set to true if your application is served over HTTPS
+// }));
+// app.use(passport.session());
+app.use('/uploads/icons', express.static(path.join(__dirname, 'uploads/event-icons')));
+app.use('/uploads/gallery', express.static(path.join(__dirname, 'uploads/event-images')));
 
 
 
@@ -53,23 +54,15 @@ mongoose.connect(process.env.MONGO_URL, {
 
 
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure: true,
-    auth: {
-      // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: process.env.EMAIL,
-    pass: process.env.AUTH_PASSWORD,
-    },
-});
 
 const corsOptions = {
-    origin: process.env.DOMAIN,
+    origin: process.env.CLIENT_DOMAIN,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,  // Enable cookies and authentication headers
 };
 
 app.use(cors(corsOptions));
+app.use(cookieParser());
 
 
 app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=>{
@@ -87,8 +80,8 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
   
     //purchase successful
     if(event.type == "checkout.session.completed"){
-        dataObject = event.data.object;
-        customer_details = dataObject.customer_details
+        const {customer_details, metadata, amount_total} = event.data.object;
+        console.log(event.data.object)
         //fields for customer_details
         // customer_details: {
         //     "address": {
@@ -107,30 +100,37 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
         // }
 
         // generate a random integer ticket number within the range of minTicketNumber and maxTicketNumber
-        generateRandomTicketNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-        qr.toDataURL(generateRandomTicketNumber, (err, url) => {
-                
-        });
-        //go to Ticket.js first to create your Ticket Schema
-        
-        // create a new ticket document that contains the customer "email", "name", "ticket_number", and "expiration_date"
-        //set the "expiration_date" of the ticket to 1 month after today
-
-        
-        await transporter.sendMail({
-            from: process.env.EMAIL,
-            to: customer_details.email,
-            subject: "Thank You For Your Purchase",
-            html: `
-            <div style="height: fit-content; width: fit-content; padding text-align: center; padding: 25px;">
-                <h1 style="font-size: x-large;">Your Purchase</h1>
-                <h1 style=" font-size: xx-large;">Ticket</h1>
-                <h3 style="font-size: large; text-decoration: wavy; font-weight: normal;">$${dataObject.amount_total/100}</h3>
-                <h3 style="font-size: x-large;">T- ${savedTicket.ticket_number}</h3>
-            </div>
+        try{
             
-            `
-        })
+            const qrs = []
+            const date = new Date(metadata.date)+1
+            let currentDate = new Date(metadata.day);
+
+            // Add one day to the current date
+            currentDate.setDate(currentDate.getDate() + 1);
+            for(let i = 0; i < metadata.quantity; i++){
+                const generateRandomTicketNumber = generateTicketNumber();
+                const qrGen = qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
+                qrs.push(qrGen)
+                const newTransaction = new Transactions({
+                    email: customer_details.email,
+                    ticket_id: metadata.ticket_id,
+                    expiration_date: currentDate,
+                    amount: Math.floor(amount_total/metadata.quantity)/100,
+                    ticket_number: generateRandomTicketNumber,
+                    ticket_title: metadata.ticket_title
+                })
+                await newTransaction.save()
+            }
+            await Ticket.findByIdAndUpdate(metadata.ticket_id,{$inc: {stock: -metadata.quantity}})
+           
+            await sendTicketConfirmation(customer_details.email,qrs,metadata.ticket_title,metadata.quantity, amount_total)
+        }catch(error){
+            console.log(error.message)
+        }
+        
+
+       
         
     }
 
@@ -139,30 +139,55 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
         dataObject = event.data.object;
         console.log(dataObject)
         const {metadata} = dataObject;
-        await Profile.findByIdAndUpdate(metadata._id, {stripe_identity_verified: true})
-        console.log(dataObject)
-        res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
-        console.log("Verification has been completed")
+        const User = await Profile.findById(metadata._id)
+        User.stripe_identity_verified = true
+        await User.save()
+        // console.log(dataObject)
+        await sendStripeVerificationVerified(User)
+        // res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
+        // console.log("Verification has been completed")
 
+    }
+    if(event.type == 'identity.verification_session.processing'){
+        // return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`);
+        const {metadata, id} = event.data.object;
+        const User = await Profile.findById(metadata._id)
+        User.recent_stripe_verification_session = id
+        await User.save()
+        await sendStripeVerifcationProcessing(User)
+        
+    }
+    if(event.type == 'identity.verification_session.requires_input'){
+        // return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`);
+        const {metadata, id} = event.data.object;
+        const User = await Profile.findById(metadata._id)
+        User.recent_stripe_verification_session = null
+        await User.save()
+        await sendStripeVerificationDenied(User)
+        
     }
     //connect capabilities updated
     if (event.type == 'account.updated') {
-        const account = event.data.object;
+        const {id, capabilities} = event.data.object;
         // const {metadata} = account;
-        console.log('Account Updated:', account.id);
-        console.log('Capabilities:', account.capabilities);
-        if(acccount.capabilities && account.capabilities["card_payments"] && account.capabilities["transfers"]){
-            await Profile.findOneAndUpdate({stripe_connected_id: account.id}, {stripe_boarded: true});
-            return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
+        console.log('Account Updated:', id);
+        console.log('Capabilities:', capabilities);
+        if(capabilities && capabilities["card_payments"] && capabilities["transfers"]){
+            
+            const User = await Profile.findOne({stripe_connected_id: id})
+            User.stripe_boarded = true
+            await User.save()
+            await sendStripeBoarded(User)
+
+            // await Profile.findOneAndUpdate({stripe_connected_id: account.id}, {stripe_boarded: true});
+            // return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)
         }
-        console.log(account.capabilities)
+        // console.log(account.capabilities)
         
         // Here you can perform actions based on the updated capabilities
       }
 
-    if(event.type == 'identity.verification_session.processing'){
-        return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`);
-    }
+    
     // Handle transfer.paid event(mainly for sellers cashing out)
     if (event.type === 'transfer.paid') {
         const transfer = event.data.object;

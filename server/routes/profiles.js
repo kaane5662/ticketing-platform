@@ -11,19 +11,23 @@ router.post("/", async (req,res)=>{
     const {username, email, password, confirmpassword} = req.body
     if(confirmpassword != password) return res.status(500).json({message:"Passwords do not match!"})
     if(password.length < 8) return res.status(500).json({message: "Password must be at least 8 characters!"})
-    if(email.split("@").length != 2) return res.status(500).json({message:"Must be a valid email!"})
-    const hashedPassword = await bcryptjs.hash(password, 10)
+    if(email.split("@").length != 2 || email.split(".").length != 2) return res.status(500).json({message:"Must be a valid email!"})
+
     try{
+        const hashedPassword = await bcryptjs.hash(password, 10)
+        console.log(hashedPassword)
         const newProfile = new Profile({
-            username,
             email,
             password: hashedPassword,
         })
         const savedProfile = await newProfile.save()
         const token = generateToken(savedProfile)
-        res.cookie("token", token)
-        res.status(201).json("Account creation successful and authenication")
+        // console.log(token)
+        res.cookie("token", token, { maxAge: 900000, secure: false })
+        return res.status(201).json("Cookies set")
+        // return res.status(201).json("Account creation successful and authenication")
     }catch(error){
+        console.log(error.message)
         res.status(500).json({message: error.message})
     }
 })
@@ -32,15 +36,28 @@ router.put("/", async (req,res)=>{
     const {email, password} = req.body
     try{
         const User = await Profile.findOne({email})
+        if(!User) return res.status(500).json({message: "Invalid email  "})
         const matchedPassword = await bcryptjs.compare(password, User.password)
         if(!matchedPassword) return res.status(500).json({message: "Invalid password"})
         const token = generateToken(User)
         res.cookie("token", token)
-        res.status(200).json(token)
+        return res.status(200).json("Cookies set")
     }catch(error){
+        console.log(error.message)
         res.status(500).json({message: error.message})
     }    
 })
+
+router.get("/auth", [verifyToken],(req,res)=>{
+    return res.status(200).json(req.user)
+})
+
+router.get('/logout',[verifyToken] ,(req, res) => {
+    // Clear JWT token cookie
+    console.log("Hello")
+    res.clearCookie('token');
+    res.sendStatus(200);
+});
 
 //google authenication
 router.get('/auth/google',

@@ -22,21 +22,17 @@ const TicketSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    published: {
-        type: Boolean,
-        default: false
-    },
     icon: {
         type:String,
         required: true
     },
     checkin_code: {
-        type: Number,
+        type: String,
         required: true
     },
     pictures: {
         type: Array,
-        required: true
+        required: false
     },
     event_type: {
         type: String,
@@ -44,25 +40,11 @@ const TicketSchema = new mongoose.Schema({
     },
     tags: {
         type: Array,
-        required: true
+        required: false
     },
     address: {
-        state: {
-            type: String,
-            required: true
-        },
-        postal_code: {
-            type: String,
-            required: true
-        },
-        line: {
-            type: String,
-            required: true
-        },
-        city: {
-            type: String,
-            required: true
-        }
+        type: String,
+        required: true
     },
     event: {
         start_time: {
@@ -81,5 +63,5 @@ const TicketSchema = new mongoose.Schema({
 })
 
 
-const Tickets = mongoose.models?.Tickets || mongoose.model("Tickets", TicketSchema)
-module.exports = Tickets
+const Ticket= mongoose.models?.Tickets || mongoose.model("Ticket", TicketSchema)
+module.exports = Ticket
