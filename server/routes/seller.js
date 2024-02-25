@@ -88,7 +88,7 @@ router.get("/boarding", verifyToken,async(req,res)=>{
         try{
             
             const accountLink = await stripe.accountLinks.create({
-                account: stripe_connected_id,
+                account: User.stripe_connected_id,
                 refresh_url: `${process.env.CLIENT_DOMAIN}/boarding`,
                 return_url: `${process.env.CLIENT_DOMAIN}/seller/create`,
                 type: 'account_onboarding',
@@ -101,7 +101,7 @@ router.get("/boarding", verifyToken,async(req,res)=>{
         }
     }catch(error){
         console.log(error.message)
-        return res.status(500).json(error.message)
+        return res.status(500).json({message:error.message})
     }
 })
 // //protected route       
