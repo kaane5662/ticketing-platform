@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "qrcode.react": "^3.1.0",
+    "react-toastify": "^10.0.4",
+    "react-typed": "^2.0.12"
+  }
+}
