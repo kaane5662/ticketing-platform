@@ -9,7 +9,7 @@ const verifySeller = async(req,res,next)=>{
     if(!User.stripe_identity_verified){ return res.status(403).json({url:`/verify`})  }
     
     // if(User.recent_stripe_verification_session != null) return res.redirect(`${process.env.CLIENT_DOMAIN}/seller/verify`)
-    
+    // console.log("Connect")
     if(User.stripe_connected_id == null) return res.status(403).json({url:`/join`})
 
     if(!User.stripe_boarded) return res.status(403).json({url:`/boarding`})

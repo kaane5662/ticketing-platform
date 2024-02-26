@@ -79,7 +79,7 @@ export default function Scan(){
 
                     <div className=" w-[450px]">
 
-                        <QrScanner size={500} delay ={300} onDecode={handleDecode}/>
+                        <QrScanner size={500} delay ={800} onDecode={handleDecode}/>
                     </div>
                     
 

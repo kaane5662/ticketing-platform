@@ -10,7 +10,7 @@ const Transactions = require("../schemas/Transactions")
 const crypto = require("crypto")
 const generateCheckInCode = require("../helpers/generateCheckInCode")
 const { verifySeller } = require("../sellerMiddleware")
-//protected route
+//route that allows sellers to create a application
 router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
     const {title, description,stock,price,line,state,event_type,address,day, start_time, end_time} = req.body
     
@@ -109,6 +109,7 @@ router.post("/purchase/:id",async(req,res)=>{
         
         // const applicationFee = Math.floor(totalCost*.15)
         // console.log(totalCost, applicationFee)
+        //$30   30 * 100 * 1.08 + 50
 
         const session = await stripe.checkout.sessions.create({
             success_url: `${process.env.CLIENT_DOMAIN}/tickets`,
@@ -119,15 +120,15 @@ router.post("/purchase/:id",async(req,res)=>{
                       name: matchingTicket.title,
                       description: matchingTicket.description,
                     },
-                    unit_amount: Math.floor(matchingTicket.price * 1.08 *100)+50, // Amount in cents (e.g., $10.00)
+                    unit_amount: Math.floor(matchingTicket.price*100), // Amount in cents (e.g., $10.00)
                   }
                   , quantity},
             ],
             mode: 'payment',
             payment_intent_data: {
+                application_fee_amount: Math.floor(matchingTicket.price*quantity * 100*.05)+50, // calculate your 
                 transfer_data: {
                     destination: matchingSeller.stripe_connected_id,
-                    amount: Math.floor(matchingTicket.price*100*quantity),
                     
                 },
             },

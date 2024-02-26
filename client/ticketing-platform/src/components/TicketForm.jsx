@@ -47,6 +47,7 @@ export default function TicketForm({Data, ticket_id, edit}){
         
         // console.log(formData.get("event_images"))
         // console.log(formData.get("tags"))
+        setChanges(true)
         axios.post(`${import.meta.env.VITE_SERVER}/tickets`,formData,{
             withCredentials: true,
             headers: {
@@ -59,6 +60,7 @@ export default function TicketForm({Data, ticket_id, edit}){
             console.log("Ticket created successfully")
             navigate("/seller/tickets")
         }).catch((error)=>{
+            setChanges(false)
             console.log(error)
             toast.error(error.response?.data?.message || "An unexpected error has occured   ")
         })

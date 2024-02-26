@@ -120,7 +120,7 @@ export default function Ticket(){
                     
                     <h1 className=" font-bold text-4xl">{Ticket.title}</h1>
                     <h3 className="text-lg">{Ticket.seller_id}</h3>
-                    <a href={`https://www.google.com/maps/place/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl hover:underline text-opacity-50 font-bold"> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
+                    <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl hover:underline text-opacity-50 font-bold"> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
                     <h1 className=" text-lg tracking-wider">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
                     <h3 className="text-3xl font-thin text-opacity-50 line-clamp-3 tracking-widest"> ${ Math.floor( (Ticket.price*1.05+.50) *100)/100 *quantity }<span className="text-sm tracking-normal">x{quantity}</span></h3>
                     <div className="flex gap-8 items-center justify-first">

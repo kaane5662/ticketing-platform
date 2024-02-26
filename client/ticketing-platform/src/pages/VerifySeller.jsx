@@ -1,9 +1,10 @@
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function VerifySeller(){
-
+    const navigate = useNavigate()
     const verify = ()=>{
         axios.get(`${import.meta.env.VITE_SERVER}/seller/verify`, {withCredentials: true}).then((response)=>{
             window.location.href = response.data.url

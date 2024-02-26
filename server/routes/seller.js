@@ -8,6 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_KEY)
 const EventTypes = require("../fields/EventTypes")
 const Tickets = require("../schemas/Ticket")
 const Transactions = require("../schemas/Transactions")
+const mongoose = require("mongoose")
 
 //creates a stripe verification session
 router.get("/verify",verifyToken,async (req,res)=>{
@@ -60,14 +61,11 @@ router.post("/connect",verifyToken,async(req,res)=>{
                 transfers: {
                   requested: true,
                 },
-            },  
-            business_profile:{
-                name: business_name,
             }
         })
         console.log(connectedAccount.id)
         await Profile.findByIdAndUpdate(req.user._id, {stripe_connected_id: connectedAccount.id})
-        return res.status(201).json({url:"/seller/boarding"})
+        return res.status(201).json({url:"/boarding"})
     }catch(error){
         console.log(error.message)
         return res.status(500).json(error.message)
@@ -90,7 +88,7 @@ router.get("/boarding", verifyToken,async(req,res)=>{
             const accountLink = await stripe.accountLinks.create({
                 account: User.stripe_connected_id,
                 refresh_url: `${process.env.CLIENT_DOMAIN}/boarding`,
-                return_url: `${process.env.CLIENT_DOMAIN}/seller/create`,
+                return_url: `${process.env.CLIENT_DOMAIN}/seller/tickets`,
                 type: 'account_onboarding',
                 
             });
@@ -247,6 +245,7 @@ router.get("/tickets", [verifyToken, verifySeller], async(req,res)=>{
 router.get("/transactions", [verifyToken, verifySeller],async(req,res)=>{
     try{
         console.log("Hi")
+        // console.log(req.user._id)
         const transactions = await Transactions.aggregate([
             {
               $lookup: {
@@ -261,7 +260,7 @@ router.get("/transactions", [verifyToken, verifySeller],async(req,res)=>{
             },
             {
               $match: {
-                "ticket.seller_id": req.user._id // Filter by the specific seller ID
+                "ticket.seller_id": new mongoose.Types.ObjectId(req.user._id) // Filter by the specific seller ID
               }
             }
           ]);

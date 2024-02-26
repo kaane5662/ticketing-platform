@@ -13,7 +13,7 @@ export default function SellerTickets(){
             console.log(response.data)
             setTickets(response.data || [])
         }).catch((error)=>{
-            if( error.response.status == 401 || error.response.status == 403) navigate("/login", {replace:true})
+            if( error.response.status == 401 || error.response.status == 403) navigate(error.response.data.url, {replace:true})
             console.log(error)
         })
     }
@@ -27,11 +27,13 @@ export default function SellerTickets(){
             <div className=" flex flex-col gap-8 p-24 w-[80%]  ">
                 <h1 className="text-5xl font-bold">Tickets</h1>
                 <div className="flex flex-col">
-                    {Tickets.length>0 ?
-                    
+                    {Tickets ?
+                        Tickets.length > 0 ?
                         Tickets.map((ticket, index) => (
                             <SellerTicket Ticket={ticket}/>
                         ))
+                        :
+                        <h3 className="self-center place-content-center flex justify-center">No tickets have been currently made</h3>
                         
                     : <FontAwesomeIcon spin className="h-10 my-20" icon={faSpinner}></FontAwesomeIcon>
                     }
