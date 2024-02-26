@@ -13,13 +13,14 @@ export default function Footer(){
                 <div className=" flex flex-col gap-6 max-md:gap-2">
                     <h1 className="text-2xl text-secondary max-md:text-lg">Socials</h1>
                     <a href="https://www.instagram.com/SwftT.inc/" className="text-lg text-secondary text-opacity-50 hover:underline hover:text-complementary max-md:text-sm">Instagram</a>
+                    <a href="swftt.inc@gmail.com" className="text-lg text-secondary text-opacity-50 hover:underline hover:text-complementary max-md:text-sm">Email</a>
                 </div>
                 <div className=" flex flex-col gap-6 max-md:gap-2">
                     <h1 className="text-2xl text-secondary max-md:text-lg">Support</h1>
                     <Link to="FAQ" smooth = {true} duration = {500} className="max-md:text-sm text-lg text-secondary text-opacity-50 hover:cursor-pointer hover:text-secondary duration-100">FAQ</Link>
                 </div>
                 <div className=" flex flex-col gap-8 max-md:gap-2">
-                    <img src="flourishspelledout.png" className=" h-40 -mt-12 max-md:mt-0 max-md:h-12 text-complementary font-bold max-md:object-scale-down"></img>
+                    <img src="put img here" className=" h-40 -mt-12 max-md:mt-0 max-md:h-12 text-complementary font-bold max-md:object-scale-down"></img>
                     <h3 className="text-lg max-md:text-sm text-secondary text-opacity-50">© 2024 SwftT LLC. All Rights Reserved</h3>
                 </div>
             </div>

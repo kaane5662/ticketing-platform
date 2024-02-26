@@ -1,4 +1,4 @@
-import {useNavigate, Link} from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function Navbar(){
     const navigate = useNavigate()
@@ -12,6 +12,7 @@ export default function Navbar(){
                     
                 </div>
                 <div className="right flex gap-8 font-poppins items-center">
+                    <button className="h-[55px] w-[150px] rounded-sm flex justify-center items-center text-md text-secondary">Learn More</button>
                     <Link className="text-md">Explore Tickets</Link>
                     <Link to="/checkseller" className="h-[45px] w-[150px] rounded-sm flex justify-center items-center text-md  text-secondary">Become a Seller</Link>
                     <button className="h-[55px] w-[150px] rounded-sm bg-complementary font-bold text-md text-primary">Sign Up</button>

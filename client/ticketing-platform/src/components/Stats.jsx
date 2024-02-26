@@ -38,16 +38,14 @@ const Stats = () => {
           Custom SMS to atteendees
         </p>
         <p className='pb-6 bg-complementary'>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
-          voluptates nostrum dolorum reprehenderit error! Doloribus est illo
-          eius saepe? Molestias sapiente perspiciatis doloribus consectetur
-          nihil facilis aliquid eaque vel quisquam.
+          We enable partying to be easier than ever. With our full fledged ticketing system, we help you focus on your party while we focus on helping your sell the tickets. 
+          
         </p>
         <div>
-          <button className='border-complementary mr-4 hover:shadow-xl'>
+          <button className=' bg-complementary border-complementary mr-4 hover:shadow-xl'>
             Learn More
           </button>
-          <button className='bg-complementary text-white border-black hover:shadow-xl'>Book Your Trip</button>
+          <button className='bg-complementary text-white border-black hover:shadow-xl'>Get Started</button>
         </div>
       </div>
     </div>
