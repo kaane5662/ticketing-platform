@@ -18,13 +18,13 @@ router.post("/", async (req,res)=>{
         const hashedPassword = await bcryptjs.hash(password, 10)
         console.log(hashedPassword)
         const newProfile = new Profile({
-            email,
+            email: email.toLowerCase(),
             password: hashedPassword,
         })
         const savedProfile = await newProfile.save()
         const token = generateToken(savedProfile)
         // console.log(token)
-        res.cookie("token", token, { maxAge: 900000, secure: false })
+        res.cookie("token", token, { maxAge: 900000, secure: true })
         await sendSignUpConfirmation(savedProfile)
         return res.status(201).json("Cookies set")
         // return res.status(201).json("Account creation successful and authenication")
@@ -37,12 +37,12 @@ router.post("/", async (req,res)=>{
 router.put("/", async (req,res)=>{
     const {email, password} = req.body
     try{
-        const User = await Profile.findOne({email})
+        const User = await Profile.findOne({email: email.toLowerCase()})
         if(!User) return res.status(500).json({message: "Invalid email  "})
         const matchedPassword = await bcryptjs.compare(password, User.password)
         if(!matchedPassword) return res.status(500).json({message: "Invalid password"})
         const token = generateToken(User)
-        res.cookie("token", token)
+        res.cookie("token", token, { maxAge: 900000, secure: true })
         return res.status(200).json("Cookies set")
     }catch(error){
         console.log(error.message)
