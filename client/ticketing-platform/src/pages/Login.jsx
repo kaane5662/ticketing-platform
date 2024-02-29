@@ -25,7 +25,7 @@ export default function Login(){
     return(
         <main className=" bg-primary text-secondary h-screen font-poppins flex items-center justify-center">
             <ToastContainer></ToastContainer>
-            <form onSubmit={signIn} className="w-[40%] gap-6 flex flex-col rounded-sm border-secondary border-2 border-opacity-20 p-12 px-18">
+            <form onSubmit={signIn} className="w-[40%] max-md:w-[90%] gap-6 flex flex-col rounded-sm border-secondary md:border-2 border-opacity-20 p-12 px-18 max-md:px-4">
                 <h1 className="text-5xl font-bold text-center">Login</h1>
                 <h3 className="text-sm -mb-4">Email</h3>
                 <input placeholder="Enter your email" name="email" className="w-[100%] bg-secondary bg-opacity-0 h-[50px] p-2 border-secondary border-2 border-opacity-10 rounded-sm"></input>

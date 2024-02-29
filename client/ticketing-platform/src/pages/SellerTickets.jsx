@@ -24,8 +24,8 @@ export default function SellerTickets(){
 
     return(
         <main className="min-h-screen bg-primary justify-center flex text-secondary font-poppins">
-            <div className=" flex flex-col gap-8 p-24 w-[80%]  ">
-                <h1 className="text-5xl font-bold">Tickets</h1>
+            <div className=" flex flex-col gap-8 p-24 w-[80%] max-lg:w-[95%] max-lg:p-2 max-lg:py-24  ">
+                <h1 className="text-5xl max-lg:text-4xl font-bold max-lg:text-center">Tickets</h1>
                 <div className="flex flex-col">
                     {Tickets ?
                         Tickets.length > 0 ?

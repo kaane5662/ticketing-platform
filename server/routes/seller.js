@@ -11,35 +11,35 @@ const Transactions = require("../schemas/Transactions")
 const mongoose = require("mongoose")
 
 //creates a stripe verification session
-router.get("/verify",verifyToken,async (req,res)=>{
-    // const {first_name, last_name, business_email, business_name} = req.body
+// router.get("/verify",verifyToken,async (req,res)=>{
+//     // const {first_name, last_name, business_email, business_name} = req.body
     
-    try{   
-        const userProfile = await Profile.findById(req.user._id)
-        if(userProfile?.stripe_identity_verified) return res.status(500).json({message:"Your account is already verified"}) 
-        if(userProfile?.recent_stripe_verification_session) return res.status(500).json({message:"Your verification is processing"}) 
+//     try{   
+//         const userProfile = await Profile.findById(req.user._id)
+//         if(userProfile?.stripe_identity_verified) return res.status(500).json({message:"Your account is already verified"}) 
+//         if(userProfile?.recent_stripe_verification_session) return res.status(500).json({message:"Your verification is processing"}) 
         
-        const verificationSession = await stripe.identity.verificationSessions.create({
-            type: 'document',
-            options: {
-                document:{
-                    require_id_number: true,
-                    require_matching_selfie: true,
-                    require_live_capture: true,
+//         const verificationSession = await stripe.identity.verificationSessions.create({
+//             type: 'document',
+//             options: {
+//                 document:{
+//                     require_id_number: true,
+//                     require_matching_selfie: true,
+//                     require_live_capture: true,
                     
-                }
-            },
-            metadata:{
-                _id: req.user._id
-            }
-        });
+//                 }
+//             },
+//             metadata:{
+//                 _id: req.user._id
+//             }
+//         });
         
-        return res.status(201).json({url: verificationSession.url})
-    }catch(error){
-        console.log(error.message)
-        return res.status(500).json({message: error.message})
-    }
-})
+//         return res.status(201).json({url: verificationSession.url})
+//     }catch(error){
+//         console.log(error.message)
+//         return res.status(500).json({message: error.message})
+//     }
+// })
 
 //creates a connect account
 router.post("/connect",verifyToken,async(req,res)=>{
@@ -48,7 +48,7 @@ router.post("/connect",verifyToken,async(req,res)=>{
     try{
         // return stripe.accounts.del("acct_1OlzyxIzbrfbn6lt")  
         const User = await Profile.findById(req.user._id)
-        if(!User.stripe_identity_verified) return res.status(403).json({message: "User has not verified id"})
+        // if(!User.stripe_identity_verified) return res.status(403).json({message: "User has not verified id"})
         if(User.stripe_connected_id) return res.status(500).json({message: "You already have a connected account"})
         const connectedAccount = await stripe.accounts.create({
             type: 'express',
@@ -61,7 +61,8 @@ router.post("/connect",verifyToken,async(req,res)=>{
                 transfers: {
                   requested: true,
                 },
-            }
+            },
+            business_type: "individual"
         })
         console.log(connectedAccount.id)
         await Profile.findByIdAndUpdate(req.user._id, {stripe_connected_id: connectedAccount.id})
@@ -74,14 +75,14 @@ router.post("/connect",verifyToken,async(req,res)=>{
 
 
 
+
 //creates a stripe connected account boarding session
 router.get("/boarding", verifyToken,async(req,res)=>{
     try{
 
         const User = await Profile.findById(req.user._id)
-        if(User.stripe_connected_id == null){
-            return res.status(500).json({message: "You need a stripe connected id"})
-        }
+        if(User.stripe_connected_id == null) return res.status(500).json({message: "You need a stripe connected id"})
+        
         // stripe_connected_id = User.stripe_connected_id || "acct_1OkYStRJr6vSAqtv"
         try{
             
@@ -90,7 +91,9 @@ router.get("/boarding", verifyToken,async(req,res)=>{
                 refresh_url: `${process.env.CLIENT_DOMAIN}/boarding`,
                 return_url: `${process.env.CLIENT_DOMAIN}/seller/tickets`,
                 type: 'account_onboarding',
-                
+                collection_options: {
+                    fields: "eventually_due"
+                }   
             });
             return res.status(201).json({url:accountLink.url})
         }catch(error){
@@ -136,8 +139,8 @@ router.get("/update", [verifyToken, verifySeller], async(req,res)=>{
         // }
         const accountLink = await stripe.accountLinks.create({
             account: User.stripe_connected_id,
-            refresh_url: `${process.env.CLIENT_DOMAIN}/seller/dashboard`,
-            return_url: `${process.env.CLIENT_DOMAIN}/seller/dashboard`,
+            refresh_url: `${process.env.CLIENT_DOMAIN}/seller/tickets`,
+            return_url: `${process.env.CLIENT_DOMAIN}/seller/tickets`,
             type: 'account_onboarding',
             
         });
@@ -147,6 +150,21 @@ router.get("/update", [verifyToken, verifySeller], async(req,res)=>{
         return res.status(500).json({message:error.message})
     }
     
+})
+
+router.get("/dashboard", [verifyToken, verifySeller], async (req,res)=>{
+    try{
+
+        const User = await Profile.findById(req.user._id)
+        // if(User.stripe_connected_id == null){
+        //     return res.status(404).json({url:"/checkseller"})
+        // }
+        const dashboardLink = await stripe.accounts.createLoginLink(User.stripe_connected_id);
+        return res.status(201).json({url:dashboardLink.url})
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json({message:error.message})
+    }
 })
 
 //create a stripe checkout transfer
@@ -241,58 +259,59 @@ router.get("/tickets", [verifyToken, verifySeller], async(req,res)=>{
     }
 })
 
-//fetch the first 50 tickets that were purchased
-router.get("/transactions", [verifyToken, verifySeller],async(req,res)=>{
-    try{
-        console.log("Hi")
-        // console.log(req.user._id)
-        const transactions = await Transactions.aggregate([
-            {
-              $lookup: {
-                from: "tickets", // The name of the tickets collection
-                localField: "ticket_id",
-                foreignField: "_id", // Assuming ticket_id in transactions matches _id in tickets
-                as: "ticket"
-              }
-            },
-            {
-              $unwind: "$ticket" // Unwind the array created by the lookup
-            },
-            {
-              $match: {
-                "ticket.seller_id": new mongoose.Types.ObjectId(req.user._id) // Filter by the specific seller ID
-              }
-            }
-          ]);
-          console.log(transactions)
-        const testTransactions = [
-            {
-                email: "user1@example.com",
-                expiration_date: new Date("2024-03-01"),
-                ticket_number: "T123456",
-                ticket_id: "ticket123",
-                seller_id: "seller123",
-                amount: 25.99,
-                order_date: Date.now(),
-                _id: "gojrtoirtoihrtio"
-            },
-            {
-                email: "user2@example.com",
-                expiration_date: new Date("2024-03-15"),
-                ticket_number: "T789012",
-                ticket_id: "ticket456",
-                seller_id: "seller456",
-                order_date: Date.now(),
-                amount: 50.50,
-                _id: "540t045904590"
-            }
-        ];
-        return res.status(200).json(transactions)
-    }catch(error){
-        console.log(error.message)
-        return res.status(500).json({message: error.message})
-    }
-})
+//returns the transactions listed for all tickets
+// router.get("/transactions", [verifyToken, verifySeller],async(req,res)=>{
+//     try{
+//         console.log("Hi")
+//         // console.log(req.user._id)
+//         const transactions = await Transactions.aggregate([
+//             {
+//               $lookup: {
+//                 from: "tickets", // The name of the tickets collection
+//                 localField: "ticket_id",
+//                 foreignField: "_id", // Assuming ticket_id in transactions matches _id in tickets
+//                 as: "ticket"
+//               }
+//             },
+//             {
+//               $unwind: "$ticket" // Unwind the array created by the lookup
+//             },
+//             {
+//               $match: {
+//                 "ticket.seller_id": new mongoose.Types.ObjectId(req.user._id) // Filter by the specific seller ID
+//               }
+//             }
+//           ]);
+//           console.log(transactions)
+//         const testTransactions = [
+//             {
+//                 email: "user1@example.com",
+//                 expiration_date: new Date("2024-03-01"),
+//                 ticket_number: "T123456",
+//                 ticket_id: "ticket123",
+//                 seller_id: "seller123",
+//                 amount: 25.99,
+//                 order_date: Date.now(),
+//                 _id: "gojrtoirtoihrtio"
+//             },
+//             {
+//                 email: "user2@example.com",
+//                 expiration_date: new Date("2024-03-15"),
+//                 ticket_number: "T789012",
+//                 ticket_id: "ticket456",
+//                 seller_id: "seller456",
+//                 order_date: Date.now(),
+//                 amount: 50.50,
+//                 _id: "540t045904590"
+//             }
+//         ];
+//         return res.status(200).json(transactions)
+//     }catch(error){
+//         console.log(error.message)
+//         return res.status(500).json({message: error.message})
+//     }
+// })
+
 //returns the statistics of the ticket
 router.get("/ticket/:id", [verifyToken, verifySeller], async (req,res)=>{
     const {id} = req.params

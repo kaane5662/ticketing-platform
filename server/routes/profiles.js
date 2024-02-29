@@ -4,6 +4,7 @@ const bcryptjs = require("bcryptjs")
 const Profile = require("../schemas/Profile")
 const passport = require("../auth")
 const {verifyToken, generateToken} = require("../jwtMiddleware")
+const { sendSignUpConfirmation } = require("../helpers/emailer")
 
 
 router.post("/", async (req,res)=>{
@@ -24,6 +25,7 @@ router.post("/", async (req,res)=>{
         const token = generateToken(savedProfile)
         // console.log(token)
         res.cookie("token", token, { maxAge: 900000, secure: false })
+        await sendSignUpConfirmation(savedProfile)
         return res.status(201).json("Cookies set")
         // return res.status(201).json("Account creation successful and authenication")
     }catch(error){

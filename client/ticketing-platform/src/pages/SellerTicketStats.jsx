@@ -50,13 +50,13 @@ export default function SellerTicketStats(){
         
         
         <div className="min-h-screen bg-primary text-secondary justify-center items-center flex font-poppins">
-            <div className=" w-[60%] py-12 flex flex-col gap-6">
-                <h1 className="text-5xl font-bold">{Data?.ticket?.title || "Test Ticket"}</h1>
-                <h3 className="text-xl">{Data?.ticket.address}</h3>
+            <div className=" w-[60%] max-lg:w-[85%] py-12 flex flex-col gap-6 max-lg:text-center">
+                <h1 className="text-5xl font-bold max-lg:text-4xl">{Data?.ticket?.title || "Test Ticket"}</h1>
+                <h3 className="text-xl max-lg:text-sm">{Data?.ticket.address}</h3>
                 <h3 className=" text-lg tracking-wider">{new Date(Data?.ticket.event.day).toDateString()}: {convertTime(Data?.ticket.event.start_time)} -{convertTime(Data?.ticket.event.end_time)}</h3>
 
                 <h3 className="bg-complementary rounded-sm p-3   text-md text-primary font-bold w-fit">{Data?.ticket.event_type || "House Party"}</h3>
-                <div className="flex gap-2 justify-between">
+                <div className="flex gap-2 justify-between flex-wrap">
                     <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
                         <h3 className="font-bold">Tickets Sold</h3>
                         <h3 className="text-sm">{Data?.transactions?.sold || 0}</h3>
@@ -81,7 +81,7 @@ export default function SellerTicketStats(){
 
                     <h1 className="text-3xl font-bold">Check In Scanner Link</h1>
                     <QRCode size={300} value={`${import.meta.env.VITE_CLIENT}/scan?ticket_id=${id}&scan_code=${Data?.ticket.checkin_code}`}></QRCode>
-                    <Link className="hover:underline" to={`/scan?ticket_id=${id}&scan_code=${Data?.ticket.checkin_code}`}>{`${import.meta.env.VITE_CLIENT}/scan?ticket_id=${id}&scan_code=${Data?.ticket.checkin_code}`}</Link>
+                    <Link className="hover:underline max-lg:text-sm" to={`/scan?ticket_id=${id}&scan_code=${Data?.ticket.checkin_code}`}>{`${import.meta.env.VITE_CLIENT}/scan?ticket_id=${id}&scan_code=${Data?.ticket.checkin_code}`}</Link>
                 </div>
                 
             </div>

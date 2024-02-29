@@ -119,7 +119,7 @@ export default function TicketForm({Data, ticket_id, edit}){
     return(
         <div className=" bg-primary flex flex-col  text-secondary items-center font-poppins ">
             <ToastContainer></ToastContainer>
-            <form onSubmit={Data ? editTicket: generateTicket} onBlur={Data ? handleChange: null} className="grid-cols-4 grid gap-8 gird w-[60%] py-16">
+            <form onSubmit={Data ? editTicket: generateTicket} onBlur={Data ? handleChange: null} className="grid-cols-4 grid gap-8 gird w-[60%] py-16 max-md:w-[85%]">
                 <h1 className="text-5xl  col-span-4  font-bold">{Data ? "Edit Ticket": "Create Ticket" }</h1>
                 <div className="flex flex-col gap-4 col-span-4  ">
                     <h3>Ticket Title</h3>

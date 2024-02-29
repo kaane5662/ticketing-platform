@@ -18,10 +18,10 @@ export default function BoardSeller(){
     return(
         <main className=" bg-primary h-screen text-secondary flex items-center justify-center  font-poppins">
             <ToastContainer></ToastContainer>
-            <div className="flex p-32 flex-col max-w-[60%] gap-8">
-                <h3 className="text-6xl font-bold">Boarding</h3>
-                <h1 className="text-xl">Streamline your payment process with Stripe Connect. Get set up in minutes to securely manage transactions and receive payouts effortlessly. Click below to begin your boarding journey and unlock a world of payment possibilities.</h1>
-                <button onClick={board} className="font-bold hover:scale-105 duration-300 rounded-sm h-[60px] w-[230px] text-primary bg-complementary text-md">Start Boarding ></button>
+            <div className="flex p-8 max-md:text-center flex-col max-w-[60%] max-md:max-w-[100%] gap-8">
+                <h3 className="text-6xl max-md:text-4xl font-bold">Boarding</h3>
+                <h1 className="text-xl max-md:text-md">Streamline your payment process with Stripe Connect. Get set up in minutes to securely manage transactions and receive payouts effortlessly. Click below to begin your boarding journey and unlock a world of payment possibilities.</h1>
+                <button onClick={board} className="font-bold hover:scale-105 duration-300 rounded-sm h-[60px] w-[230px] text-primary bg-complementary text-md max-md:self-center">Start Boarding ></button>
             </div>
             {/* <div className="flex w-[30%] h-[70%]">
                 <img className=" object-cover rounded-md" src="/verification.png"></img>

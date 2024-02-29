@@ -26,11 +26,11 @@ export default function TicketDashboard(){
 
     return(
         <main className="min-h-screen bg-primary  text-secondary font-poppins">
-            <div className="p-32 flex flex-col gap-8">
-                <h1 className="text-5xl font-bold">Explore Tickets</h1>
+            <div className="p-32 max-lg:p-4 max-lg:py-20 flex flex-col gap-8">
+                <h1 className="text-5xl max-lg:text-4xl font-bold">Explore Tickets</h1>
 
                 {Tickets?
-                <div className="flex gap-12 flex-wrap">
+                <div className=" gap-12 grid grid-cols-4 max-lg:grid-cols-2 max-lg:gap-3 flex-wrap">
                     {Tickets.map((ticket, index)=>{
                         return (
                             <TicketDisplay Ticket={ticket}/>

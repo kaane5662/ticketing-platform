@@ -31,7 +31,7 @@ router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"ico
         if(description.length < 5) return res.status(500).json({message: "Description is too short"})
         if(address.length < 5) return res.status(500).json({message: "Description is too short"})
         if(stock < 1) return res.status(500).json({message: "Invalid stock"})
-        if(price < 0 || price < 10 || Math.round(price * 100) != Math.floor(price*100) ) return res.status(500).json({message: "Invalid price"})
+        if(price < 0 || price < 1 || Math.round(price * 100) != Math.floor(price*100) ) return res.status(500).json({message: "Invalid price"})
         // console.log(req.user)
         const newTicket = new Ticket({
             title,
@@ -111,6 +111,14 @@ router.post("/purchase/:id",async(req,res)=>{
         // console.log(totalCost, applicationFee)
         //$30   30 * 100 * 1.08 + 50
 
+        const price = matchingTicket.price * quantity * 100
+        const qTax = quantity*50
+        const totalTax = price *.1
+
+        const buyerPrice = price+qTax+totalTax;
+        const stripeProcessing = Math.floor( (buyerPrice*.029+30) );
+        console.log(stripeProcessing)
+
         const session = await stripe.checkout.sessions.create({
             success_url: `${process.env.CLIENT_DOMAIN}/tickets`,
             line_items: [
@@ -118,18 +126,18 @@ router.post("/purchase/:id",async(req,res)=>{
                     currency: 'usd',
                     product_data: {
                       name: matchingTicket.title,
-                      description: matchingTicket.description,
+                      description: matchingTicket.description +`\n x${quantity}`,
                     },
-                    unit_amount: Math.floor(matchingTicket.price*100), // Amount in cents (e.g., $10.00)
+                    unit_amount: buyerPrice, // Amount in cents (e.g., $10.00)
                   }
-                  , quantity},
+                  , quantity: 1},
             ],
             mode: 'payment',
             payment_intent_data: {
-                application_fee_amount: Math.floor(matchingTicket.price*quantity * 100*.05)+50, // calculate your 
+                application_fee_amount: qTax+totalTax-stripeProcessing, // calculate your 
                 transfer_data: {
                     destination: matchingSeller.stripe_connected_id,
-                    
+                
                 },
             },
             metadata: {
@@ -139,6 +147,9 @@ router.post("/purchase/:id",async(req,res)=>{
                 quantity: quantity
             }
         });
+
+        
+
         return res.status(201).json({url: session.url})
 
     }catch(error){

@@ -29,7 +29,7 @@ export default function SignUp(){
     return(
         <main className=" bg-primary text-secondary min-h-screen font-poppins flex items-center justify-center">
             <ToastContainer></ToastContainer>
-            <form onSubmit={createAccount} className="w-[40%] gap-3 flex flex-col rounded-sm border-secondary border-2 border-opacity-20 p-12 px-24">
+            <form onSubmit={createAccount} className="w-[40%] gap-3 flex flex-col rounded-sm border-secondary lg:border-2 border-opacity-20 p-12 px-24 max-lg:w-[90%] max-lg:p-4">
                 <h1 className="text-5xl font-bold text-center">Create Account</h1>
                 <h3 className="text-md text-center">Discover and secure your next unforgettable event with us.</h3>
                 <h3 className="text-sm -mb-2">Email</h3>

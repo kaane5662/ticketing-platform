@@ -84,7 +84,7 @@ export default function Ticket(){
     return(
         <>
         
-        <div className=" h-screen bg-primary flex items-center justify-center text-secondary font-poppins ">
+        <div className=" min-h-screen bg-primary flex items-center justify-center text-secondary font-poppins max-lg:py-20 ">
             {popUpActive ? <Popup setActive={setPopUpActice} success = {success}></Popup>: null}
             <motion.div 
             initial={{
@@ -106,12 +106,12 @@ export default function Ticket(){
                 stiffness: 20,  
             }}
             viewport={{ once: true }}
-            className=" gap-12 flex justify-center items-center w-[80%]">
+            className=" gap-12 flex justify-center items-center w-[80%] max-lg:flex-col max-lg:w-[90%]">
                 
                 <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[500px] w-[500px] bg-complementary object-cover"/>
 
                 
-                <div className="flex flex-col justify-center col-span-2 gap-6 max-w-[50%] ">
+                <div className="flex flex-col justify-center col-span-2 gap-6 max-w-[50%] max-lg:max-w-[95%] ">
                     <div className="tags flex gap-4 ">
                         <h1 className="bg-complementary p-2 px-4 inline-block rounded-sm justify-center items-center text-primary font-bold">{Ticket.event_type}</h1>
                         {/* <h1 className="bg-complementary p-2 inline-block rounded-full justify-center items-center text-primary font-bold">10:00PM</h1> */}
@@ -120,9 +120,9 @@ export default function Ticket(){
                     
                     <h1 className=" font-bold text-4xl">{Ticket.title}</h1>
                     <h3 className="text-lg">{Ticket.seller_id}</h3>
-                    <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl hover:underline text-opacity-50 font-bold"> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
-                    <h1 className=" text-lg tracking-wider">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
-                    <h3 className="text-3xl font-thin text-opacity-50 line-clamp-3 tracking-widest"> ${ Math.floor( (Ticket.price*1.05+.50) *100)/100 *quantity }<span className="text-sm tracking-normal">x{quantity}</span></h3>
+                    <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl max-lg:text-lg hover:underline text-opacity-50 font-bold "> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
+                    <h1 className=" text-lg tracking-wider max-lg:text-sm">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
+                    <h3 className="text-3xl font-thin text-opacity-50 line-clamp-3 tracking-widest"> ${ Ticket.price * quantity }<span className="text-sm tracking-normal">x{quantity}</span></h3>
                     <div className="flex gap-8 items-center justify-first">
                         <FontAwesomeIcon onClick={()=>changeQuantity(-1)}  className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-10 bg-primary items-center justify-center" icon={faMinus}></FontAwesomeIcon>
                         <h3 className="text-xl">{quantity}</h3>
@@ -135,11 +135,11 @@ export default function Ticket(){
                 
             </motion.div>
         </div>
-        <div className="min-h-screen flex flex-col gap-8 h-screen bg-primary items-center p-32  text-secondary font-poppins    ">
-            <div className="flex flex-col gap-8 w-[80%]">
+        <div className="min-h-screen flex flex-col gap-8  bg-primary items-center p-32 max-md:p-4  text-secondary font-poppins    ">
+            <div className="flex flex-col gap-8 w-[80%] max-lg:w-[90%]">
 
-                <h1 className="text-5xl font-bold "> Overview</h1>
-                <h3 className="text-xl ">{Ticket.description}</h3>
+                <h1 className="text-5xl max-lg:text-4xl font-bold "> Overview</h1>
+                <h3 className="text-xl max-lg:text-sm  ">{Ticket.description}</h3>
             </div>
         </div>
         </>

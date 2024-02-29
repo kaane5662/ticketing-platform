@@ -18,6 +18,8 @@ import SellerTickets from "./pages/SellerTickets"
 import TicketDashboard from "./pages/TicketDashboard"
 import SellerTicketStats from "./pages/SellerTicketStats"
 import SellerDashboard from "./pages/SellerDashboard"
+import NotFound from "./pages/NotFound"
+import Landing from "./pages/Landing"
 
 export default function App() {
   // const location = useLocation()
@@ -49,6 +51,7 @@ export default function App() {
         <Route path="*" Component={Navbar} />
         <Route path="/seller/*" Component={SellerSidebar} />
         <Route path="/scan/*" />
+        
         {/* <Route path = "/ticket/:id" Component={Ticket}></Route>
         <Route path="/tickets" Component={TicketDashboard}></Route>
         <Route path = "/checkIn" Component={CheckIn}></Route>
@@ -70,10 +73,11 @@ export default function App() {
       </Routes>
       <Routes>
       <Route path="*" Component={Navbar} />
+        <Route path="/" Component={Landing}></Route>
         <Route path="/seller/*" Component={SellerSidebar} />
         <Route path = "/ticket/:id" Component={Ticket}></Route>
         <Route path="/tickets" Component={TicketDashboard}></Route>
-        <Route path = "/checkIn" Component={CheckIn}></Route>
+        {/* <Route path = "/checkIn" Component={CheckIn}></Route> */}
         <Route path = "/signup" Component={SignUp}></Route>
         <Route path="/login" Component={Login}></Route>
         <Route path="/join" Component={SellerSignUp}></Route>
@@ -82,11 +86,12 @@ export default function App() {
         <Route path="/boarding" Component={BoardSeller}></Route>
         <Route path = "/seller/create" Component={CreateTicket  }></Route>
         <Route path = "/scan" Component = {Scan}></Route>
-        <Route path="/seller/dashboard" Component={SellerDashboard}></Route>
-        <Route path="/seller/checkout" Component={SellerCheckout}></Route>
+        {/* <Route path="/seller/dashboard" Component={SellerDashboard}></Route> */}
+        {/* <Route path="/seller/checkout" Component={SellerCheckout}></Route> */}
         <Route path="/seller/transactions" Component={SellerTransactions}></Route>
         <Route path="/seller/tickets" Component={SellerTickets}></Route>
         <Route path="/seller/ticket/:id" Component={SellerTicketStats}></Route>
+        <Route path="*" Component={NotFound}></Route>
       </Routes>
     </BrowserRouter>
     </>

@@ -6,7 +6,7 @@ const verifySeller = async(req,res,next)=>{
     // res.header('Access-Control-Allow-Origin', '*'); // Adjust as needed
     // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     // console.log(User)
-    if(!User.stripe_identity_verified){ return res.status(403).json({url:`/verify`})  }
+    // if(!User.stripe_identity_verified){ return res.status(403).json({url:`/verify`})  }
     
     // if(User.recent_stripe_verification_session != null) return res.redirect(`${process.env.CLIENT_DOMAIN}/seller/verify`)
     // console.log("Connect")

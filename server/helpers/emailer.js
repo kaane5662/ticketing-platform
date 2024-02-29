@@ -121,7 +121,7 @@ const sendStripeBoarded = async(User)=>{
                 <h2>Account Boarded</h2>
                 <p>Dear User,</p>
                 <p>
-                    Your account has successfully been boared.
+                    Your stripe express account has successfully been boarded.
                 </p>
                 <p>
                     You are now eligible to create and sell tickets and transfer your profits to your bank account.
@@ -185,6 +185,46 @@ const sendTicketConfirmation = async(email, qrCodes, ticket_title, quantity, tot
     })
 }
 
+const sendSignUpConfirmation = async(User)=>{
+    // console.log(qrCodes)
+    // let qrCodeImagesHTML = '';
+    // qrCodes.forEach(qrCodeDataURL => {
+    //     qrCodeImagesHTML += `<img style="width:500px; height:500px" src="${qrCodeDataURL}" alt="QR Code"></img><br>`;
+    // });
+    // console.log(qrCodeImagesHTML)
+    await transporter.sendMail({
+        from: process.env.EMAIL_DOMAIN,
+        to: User.email,
+        subject: `Sign Up Confirmation`,
+        html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Confirmation Email</title>
+        </head>
+        <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Account Created</h2>
+                <p>Dear User,</p>
+                <p>
+                    Your account was created successfully on our platform.
+                </p>
+                <p>
+                    You now have access to sign up as a seller, or you can continue to use our platform regularly as a buyer.
+                    
+                </p>
+                
+                <p>Best Regards,<br>SwftT</p>
+            </div>
+        </body>
+        </html>
+        
+        `
+    })
+}
 
 
-module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation}
+
+module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation, sendSignUpConfirmation}

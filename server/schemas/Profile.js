@@ -3,7 +3,8 @@ const mongoose = require("mongoose")
 const ProfileSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     password: {
         type: String,
@@ -13,10 +14,10 @@ const ProfileSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    stripe_identity_verified: {
-        type: Boolean,
-        default: false
-    },
+    // stripe_identity_verified: {
+    //     type: Boolean,
+    //     default: false
+    // },
     stripe_boarded:{
         type:Boolean,
         default: false
