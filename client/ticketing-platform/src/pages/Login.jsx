@@ -13,8 +13,8 @@ export default function Login(){
         }, {withCredentials: true}).then((response)=>{
             toast.success("Login Success    ")
             console.log("Login success")
-            navigate("/tickets",{replace:true})
-            window.location.reload()
+            // navigate("/tickets",{replace:true})
+            // window.location.reload()
         }).catch((error)=>{
             console.log(error)
             console.log("Ticket is invalid")
