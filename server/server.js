@@ -84,7 +84,7 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
     //purchase successful
     if(event.type == "checkout.session.completed"){
         const {customer_details, metadata, amount_total} = event.data.object;
-        console.log(event.data.object)
+        console.log("Checkout completed")
         //fields for customer_details
         // customer_details: {
         //     "address": {
@@ -172,11 +172,12 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
     //connect capabilities updated
     if (event.type == 'account.updated') {
         const {id, capabilities} = event.data.object;
+        console.log("Account updated")
         // const {metadata} = account;
         console.log('Account Updated:', id);
         console.log('Capabilities:', capabilities);
         if(capabilities && capabilities["card_payments"] && capabilities["transfers"]){
-            
+            console.log("Permission enabled for card")
             const User = await Profile.findOne({stripe_connected_id: id})
             User.stripe_boarded = true
             await User.save()
