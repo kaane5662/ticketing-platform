@@ -70,7 +70,7 @@ router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"i
         if(address && address.length < 5) return res.status(500).json({message: "Description is too short"})
         if(stock && stock < 1) return res.status(500).json({message: "Invalid stock"})
        
-        if( price && (price < 0 || price < 10 || Math.round(price * 100) != Math.floor(price*100)) ) return res.status(500).json({message: "Invalid price"})
+        if( price && (price < 0 || price < 1 || Math.round(price * 100) != Math.floor(price*100)) ) return res.status(500).json({message: "Invalid price"})
         // return
         const matchingTicket = await Ticket.findById(id)
         
