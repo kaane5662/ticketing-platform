@@ -67,41 +67,22 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 
-
-app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=>{
+app.post("/webhook/platform",express.raw({ type: 'application/json' }) ,async (req, res)=>{
     const sig = req.headers['stripe-signature'];
     // const rawBody = JSON.stringify(req.body)
     let event;
     
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_PLATFORM_WEBHOOK_SECRET);
     } catch (err) {
         console.log(err.message)
-        return res.
-        status(500).send(`Webhook Error: ${err.message}`);
+        return res.status(500).send(`Webhook Error: ${err.message}`);
     }
-  
-    //purchase successful
+
     if(event.type == "checkout.session.completed"){
         const {customer_details, metadata, amount_total} = event.data.object;
         console.log("Checkout completed")
         //fields for customer_details
-        // customer_details: {
-        //     "address": {
-        //       "city": null,
-        //       "country": "US",
-        //       "line1": null,
-        //       "line2": null,
-        //       "postal_code": "43985",
-        //       "state": null
-        //     },
-        //     "email": "kaane0169@gmail.com",
-        //     "name": "John Adams",
-        //     "phone": null,
-        //     "tax_exempt": "none",
-        //     "tax_ids": []
-        // }
-
         // generate a random integer ticket number within the range of minTicketNumber and maxTicketNumber
         try{
             
@@ -130,12 +111,30 @@ app.post("/webhook",express.raw({ type: 'application/json' }) ,async (req, res)=
             await sendTicketConfirmation(customer_details.email,qrs,metadata.ticket_title,metadata.quantity, amount_total)
         }catch(error){
             console.log(error.message)
-        }
-        
-
-       
+        }      
         
     }
+
+})
+
+
+
+app.post("/webhook/connect",express.raw({ type: 'application/json' }) ,async (req, res)=>{
+    const sig = req.headers['stripe-signature'];
+    // const rawBody = JSON.stringify(req.body)
+    
+    let event;
+    
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_CONNECT_WEBHOOK_SECRET);
+    } catch (err) {
+        console.log(err.message)
+        return res.
+        status(500).send(`Webhook Error: ${err.message}`);
+    }
+  
+    //purchase successful
+    
 
     //verification completed
     if(event.type == "identity.verification_session.verified"){
