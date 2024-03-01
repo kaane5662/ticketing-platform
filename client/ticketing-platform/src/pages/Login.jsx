@@ -13,7 +13,7 @@ export default function Login(){
         }, {withCredentials: true}).then((response)=>{
             toast.success("Login Success    ")
             console.log("Login success")
-            navigate("/tickets",{replace:true})
+            navigate("/tickets")
             window.location.reload()
         }).catch((error)=>{
             console.log(error)
