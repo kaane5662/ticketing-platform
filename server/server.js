@@ -175,7 +175,7 @@ app.post("/webhook/connect",express.raw({ type: 'application/json' }) ,async (re
         // const {metadata} = account;
         console.log('Account Updated:', id);
         console.log('Capabilities:', capabilities);
-        if(capabilities && capabilities["card_payments"] && capabilities["transfers"]){
+        if(capabilities && capabilities["card_payments"] == "active" && capabilities["transfers"] == "active"){
             console.log("Permission enabled for card")
             const User = await Profile.findOne({stripe_connected_id: id})
             User.stripe_boarded = true
