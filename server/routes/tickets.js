@@ -112,7 +112,7 @@ router.post("/purchase/:id",async(req,res)=>{
         //$30   30 * 100 * 1.08 + 50
 
         const price = matchingTicket.price * quantity * 100
-        const qTax = quantity*50
+        const qTax = quantity*99
         const totalTax = price *.1
 
         const buyerPrice = price+qTax+totalTax;
