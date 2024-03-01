@@ -24,7 +24,7 @@ router.post("/", async (req,res)=>{
         const savedProfile = await newProfile.save()
         const token = generateToken(savedProfile)
         // console.log(token)
-        res.cookie("token", token, { maxAge: 900000, secure: false, path:"/" })
+        res.cookie("token", token, { maxAge: 900000, secure: false, httpOnly:true, path:"/" })
         await sendSignUpConfirmation(savedProfile)
         return res.status(201).json("Cookies set")
         // return res.status(201).json("Account creation successful and authenication")
@@ -42,7 +42,7 @@ router.put("/", async (req,res)=>{
         const matchedPassword = await bcryptjs.compare(password, User.password)
         if(!matchedPassword) return res.status(500).json({message: "Invalid password"})
         const token = generateToken(User)
-        res.cookie("token", token, { maxAge: 900000,secure: false, path: "/"  })
+        res.cookie("token", token, { maxAge: 900000,secure: false, httpOnly: true, path: "/"  })
         return res.status(200).json("Cookies set")
     }catch(error){
         console.log(error.message)

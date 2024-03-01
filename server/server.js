@@ -31,6 +31,9 @@ const Ticket = require("./schemas/Ticket")
 //     cookie: { secure: false } // Set to true if your application is served over HTTPS
 // }));
 // app.use(passport.session());
+
+app.set('trust proxy', 1);
+
 app.use('/uploads/icons', express.static(path.join(__dirname, 'uploads/event-icons')));
 app.use('/uploads/gallery', express.static(path.join(__dirname, 'uploads/event-images')));
 
