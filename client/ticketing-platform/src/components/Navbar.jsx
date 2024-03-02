@@ -60,7 +60,7 @@ export default function Navbar(){
                     <Link onClick={mobileHide} to="/tickets" className="text-md hover:underline hover:cursor-pointer">Explore Tickets</Link>
                     {Profile? 
                         <>
-                        <h3  className="text-md hover:cursor-pointer hover:underline">Log out</h3>
+                        <h3 onClick={handleLogOut} className="text-md hover:cursor-pointer hover:underline">Log out</h3>
                         <h3 className="text-md">{Profile?.email.split("@")[0]}</h3>
                         </>
                         :
