@@ -111,9 +111,9 @@ router.post("/purchase/:id",async(req,res)=>{
         // console.log(totalCost, applicationFee)
         //$30   30 * 100 * 1.08 + 50
 
-        const price = matchingTicket.price * quantity * 100
+        const price = Math.ceil(matchingTicket.price * quantity * 100)
         const qTax = quantity*99
-        const totalTax = price *.1
+        const totalTax = Math.floor(price *.1)
 
         const buyerPrice = price+qTax+totalTax;
         const stripeProcessing = Math.floor( (buyerPrice*.029+30) );
