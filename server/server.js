@@ -109,11 +109,17 @@ app.post("/webhook/platform",express.raw({ type: 'application/json' }) ,async (r
             await Ticket.findByIdAndUpdate(metadata.ticket_id,{$inc: {stock: -metadata.quantity}})
            
             await sendTicketConfirmation(customer_details.email,qrs,metadata.ticket_title,metadata.quantity, amount_total)
+            return res.status(200).send()
         }catch(error){
             console.log(error.message)
+            return res.status(500).send()
         }      
+
+        return res.status(500).send()
         
     }
+
+    return res.status(200).send()
 
 })
 
