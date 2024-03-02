@@ -75,30 +75,31 @@ export default function Navbar(){
                     
                     <Link to="/seller/tickets" className="p-4 px-8 hover:scale-105 duration-300 rounded-sm bg-complementary border-opacity-70 font-bold text-md text-primary "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
                 </div>
-                <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer"></FontAwesomeIcon>
+                <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer z-20"></FontAwesomeIcon>
             {/* mobile menu */}
 
             {
                 navbarActive &&
                 (
-                    <div className="flex flex-col gap-8 h-screen absolute top-0 py-10 bg-primary w-[100%] px-4 transition duration-300 z-20">
-                        <Link onClick={mobileHide} to="/tickets" className="text-md hover:underline">Explore Tickets</Link>
+                    <div className="flex flex-col gap-8 h-screen absolute top-0 py-10 bg-primary w-[50%] px-4 border-opacity-20 border-secondary border-r transition duration-300 z-20">
+                        <img onClick={()=>navigate("/")} src="SwftTLogo.png" className="h-20 max-lg:h-10 object-scale-down "></img> 
+                        <Link onClick={mobileHide} to="/tickets" className="text-sm hover:underline">Explore Tickets</Link>
                         {Profile? 
                             <>
-                            <h3 onClick={handleLogOut}  className="text-md hover:cursor-pointer hover:underline">Log out</h3>
-                            <h3 onClick={mobileHide}  className="text-md">{Profile?.email.split("@")[0]}</h3>
+                            <h3 onClick={handleLogOut}  className="text-sm hover:cursor-pointer hover:underline">Log out</h3>
+                            <h3 onClick={mobileHide}  className="text-sm">{Profile?.email.split("@")[0]}</h3>
                             </>
                             :
                             (
                                 <>
-                                <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-md  hover:underline hover:cursor-pointer">Request a Demo</a>
-                                <Link onClick={mobileHide} to="/login" className="text-md  hover:underline">Log in</Link>
-                                <Link onClick={mobileHide} to="/signup" className="text-md  hover:underline">Sign Up</Link>
+                                <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-sm  hover:underline hover:cursor-pointer">Request a Demo</a>
+                                <Link onClick={mobileHide} to="/login" className="text-sm  hover:underline">Log in</Link>
+                                <Link onClick={mobileHide} to="/signup" className="text-sm  hover:underline">Sign Up</Link>
                                 </>
                             )
                         }
                         
-                        <Link to="/seller/tickets" className="p-4 px-8 hover:scale-105 duration-300 rounded-sm bg-complementary border-opacity-70 font-bold text-md text-primary max-lg:w-fit "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
+                        <Link to="/seller/tickets" className="p-4 px-2 hover:scale-105 duration-300 rounded-sm bg-complementary border-opacity-70 font-bold text-sm text-primary max-lg:w-fit "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
                     </div>
                 )
             } 
