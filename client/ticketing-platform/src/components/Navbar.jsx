@@ -33,6 +33,11 @@ export default function Navbar(){
         })
     }
 
+    const mobileHide = ()=>{
+        console.log("Hide buddy")
+        setNavbarActive(false)
+    }
+
     
 
     
@@ -52,18 +57,18 @@ export default function Navbar(){
                 
                 <div className="right flex gap-8 font-poppins items-center max-lg:hidden ">
                     {/* <h3  className="text-md hover:underline">{Profile?.email.split("@")[0]}</h3> */}
-                    <Link to="/tickets" className="text-md hover:underline">Explore Tickets</Link>
+                    <Link onClick={mobileHide} to="/tickets" className="text-md hover:underline hover:cursor-pointer">Explore Tickets</Link>
                     {Profile? 
                         <>
-                        <h3 onClick={handleLogOut}  className="text-md hover:cursor-pointer hover:underline">Log out</h3>
-                        <h3  className="text-md">{Profile?.email.split("@")[0]}</h3>
+                        <h3  className="text-md hover:cursor-pointer hover:underline">Log out</h3>
+                        <h3 className="text-md">{Profile?.email.split("@")[0]}</h3>
                         </>
                         :
                         (
                             <>
                             <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-md  hover:underline hover:cursor-pointer">Request a Demo</a>
-                            <Link to="/login" className="text-md  hover:underline">Log in</Link>
-                            <Link to="/signup" className="text-md  hover:underline">Sign Up</Link>
+                            <Link  to="/login" className="text-md  hover:underline">Log in</Link>
+                            <Link  to="/signup" className="text-md  hover:underline">Sign Up</Link>
                             </>
                         )
                     }
@@ -76,19 +81,19 @@ export default function Navbar(){
             {
                 navbarActive &&
                 (
-                    <div className="flex flex-col gap-8 h-screen absolute top-24 bg-primary w-[100%] px-4 transition duration-300 z-20">
-                        <Link to="/tickets" className="text-md hover:underline">Explore Tickets</Link>
+                    <div className="flex flex-col gap-8 h-screen absolute top-0 py-10 bg-primary w-[100%] px-4 transition duration-300 z-20">
+                        <Link onClick={mobileHide} to="/tickets" className="text-md hover:underline">Explore Tickets</Link>
                         {Profile? 
                             <>
                             <h3 onClick={handleLogOut}  className="text-md hover:cursor-pointer hover:underline">Log out</h3>
-                            <h3  className="text-md">{Profile?.email.split("@")[0]}</h3>
+                            <h3 onClick={mobileHide}  className="text-md">{Profile?.email.split("@")[0]}</h3>
                             </>
                             :
                             (
                                 <>
                                 <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-md  hover:underline hover:cursor-pointer">Request a Demo</a>
-                                <Link to="/login" className="text-md  hover:underline">Log in</Link>
-                                <Link to="/signup" className="text-md  hover:underline">Sign Up</Link>
+                                <Link onClick={mobileHide} to="/login" className="text-md  hover:underline">Log in</Link>
+                                <Link onClick={mobileHide} to="/signup" className="text-md  hover:underline">Sign Up</Link>
                                 </>
                             )
                         }
