@@ -134,7 +134,7 @@ router.post("/purchase/:id",async(req,res)=>{
             ],
             mode: 'payment',
             payment_intent_data: {
-                application_fee_amount: qTax+totalTax-stripeProcessing, // calculate your 
+                application_fee_amount: qTax+totalTax, // calculate your 
                 transfer_data: {
                     destination: matchingSeller.stripe_connected_id,
                 
