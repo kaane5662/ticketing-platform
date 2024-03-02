@@ -11,7 +11,7 @@ export default function FAQ(){
                     <div className="flex flex-col gap-4 ">
                         <Question question={"How do I join as a seller?"} answer={"Just sign up with an account on our platform and then follow the boarding instructions when you click Switch to Seller."}></Question>
                         <Question question={"What do I need to join as a seller?"} answer={"A valid SSN is required for identification purposes, and to facilitate transactions, you will need either a banking account or a debit/credit card. However, please note that we do not store your SSN within our system for security reasons."}></Question>
-                        <Question question={"What are the benefits of using SwftTs?"} answer={"We help you focus on hosting the best event while leaving the payment stress to us."}></Question>
+                        <Question question={"What are the benefits of using SwftT?"} answer={"We help you focus on hosting the best event while leaving the payment stress to us."}></Question>
                         <Question question={"What percentage of my earnings will SwftT take?"} answer={"SwftT takes 0% of your ticket sales. Processing fees are added on top of the total transaction for the buyer.   "}></Question>
                         <Question question={"How will I get Paid?"} answer={"Powered by Stripe. You are able to connect your bank account and cashout whenever you want."}></Question>
                     </div>
