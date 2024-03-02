@@ -6,7 +6,7 @@ export default function Question({question, answer}){
 
     const [isOpen, toggleDropdown] = useState(false)
     return(
-        <div className=" w-[600px] max-lg:self-center max-lg:w-[400px] font-poppins max-lg:p-4 p-6 bg-secondary bg-opacity-0 rounded-xl border-2 border-secondary border-opacity-20 ">
+        <div className=" w-[600px] max-lg:self-center max-lg:w-[93%] font-poppins max-lg:p-4 p-6 bg-secondary bg-opacity-0 rounded-xl border-2 border-secondary border-opacity-20 ">
             <div onClick={()=>toggleDropdown(!isOpen)} className="w-[100%] flex cursor-pointer  items-center text-secondary  rounded-md  max-md:text-lg text-center gap-4 ">
                 <h1 className=" text-lg font-semibold ">{question}</h1> 
                 <FontAwesomeIcon icon={ isOpen ? faCaretUp: faCaretDown}></FontAwesomeIcon>
