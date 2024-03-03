@@ -183,10 +183,16 @@ app.post("/webhook/connect",express.raw({ type: 'application/json' }) ,async (re
         console.log('Capabilities:', capabilities);
         if(capabilities && capabilities["card_payments"] == "active" && capabilities["transfers"] == "active"){
             console.log("Permission enabled for card")
-            const User = await Profile.findOne({stripe_connected_id: id})
-            User.stripe_boarded = true
-            await User.save()
-            await sendStripeBoarded(User)
+            try{
+                const User = await Profile.findOne({stripe_connected_id: id})
+                User.stripe_boarded = true
+                await User.save()
+                await sendStripeBoarded(User)
+                return res.status(200).send()
+            }catch(error){
+                console.log(error.message)
+                return res.status(500).send()
+            }
 
             // await Profile.findOneAndUpdate({stripe_connected_id: account.id}, {stripe_boarded: true});
             // return res.redirect(`${process.env.CLIENT_DOMAIN}/checkseller`)

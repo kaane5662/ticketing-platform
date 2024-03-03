@@ -106,24 +106,24 @@ export default function Ticket(){
                 stiffness: 20,  
             }}
             viewport={{ once: true }}
-            className=" gap-12 flex justify-center items-center w-[80%] max-lg:flex-col max-lg:w-[90%]">
+            className=" gap-12 max-lg:gap-4 flex justify-center items-center w-[80%] max-lg:flex-col max-lg:w-[90%]">
                 
-                <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[500px] w-[500px] bg-complementary object-cover"/>
+                <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[500px] w-[500px] bg-complementary object-cover max-lg:h-[275px] max-lg:w-[330px]"/>
 
                 
-                <div className="flex flex-col justify-center col-span-2 gap-6 max-w-[50%] max-lg:max-w-[95%] ">
+                <div className="flex flex-col justify-center col-span-2 gap-6 max-w-[50%] max-lg:max-w-[95%] max-lg:gap-3 ">
                     <div className="tags flex gap-4 ">
-                        <h1 className="bg-complementary p-2 px-4 inline-block rounded-sm justify-center items-center text-primary font-bold">{Ticket.event_type}</h1>
+                        <h1 className="bg-complementary p-2 px-4 inline-block rounded-sm justify-center items-center max-lg:text-sm text-primary font-bold">{Ticket.event_type}</h1>
                         {/* <h1 className="bg-complementary p-2 inline-block rounded-full justify-center items-center text-primary font-bold">10:00PM</h1> */}
 
                     </div>
                     
-                    <h1 className=" font-bold text-4xl">{Ticket.title}</h1>
-                    <h3 className="text-lg">{Ticket.seller_id}</h3>
-                    <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl max-lg:text-lg hover:underline text-opacity-50 font-bold "> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
+                    <h1 className=" font-bold text-4xl max-lg:text-3xl">{Ticket.title}</h1>
+                    <h3 className="text-lg max-lg:text-sm">Stock: {Ticket.stock}</h3>
+                    <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl max-lg:text-sm hover:underline text-opacity-50 font-bold "> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
                     <h1 className=" text-lg tracking-wider max-lg:text-sm">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
                     <h3 className="text-3xl font-thin text-opacity-50 line-clamp-3 tracking-widest"> ${ Ticket.price * quantity }<span className="text-sm tracking-normal">x{quantity}</span></h3>
-                    <div className="flex gap-8 items-center justify-first">
+                    <div className="flex gap-8 items-center max-lg:gap-4 justify-first">
                         <FontAwesomeIcon onClick={()=>changeQuantity(-1)}  className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-10 bg-primary items-center justify-center" icon={faMinus}></FontAwesomeIcon>
                         <h3 className="text-xl">{quantity}</h3>
                         <FontAwesomeIcon onClick={()=>changeQuantity(1)} className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-10   bg-primary items-center justify-center" icon={faPlus}></FontAwesomeIcon>

@@ -10,6 +10,9 @@ const Transactions = require("../schemas/Transactions")
 const crypto = require("crypto")
 const generateCheckInCode = require("../helpers/generateCheckInCode")
 const { verifySeller } = require("../sellerMiddleware")
+const fs = require('fs').promises;
+const path = require('path');
+const { errorMonitor } = require("events")
 //route that allows sellers to create a application
 router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
     const {title, description,stock,price,line,state,event_type,address,day, start_time, end_time} = req.body
@@ -80,7 +83,7 @@ router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"i
         if(stock) matchingTicket.stock = stock
         if(price) matchingTicket.price = price
         if(address) matchingTicket.address = address
-        if(day) matchingTicket.day = day
+        if(day) matchingTicket.event.day = day
         if(start_time) matchingTicket.event.start_time = start_time
         if(end_time) matchingTicket.event.end_time = end_time
         if(event_type) matchingTicket.event_type = event_type
@@ -93,7 +96,26 @@ router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"i
     }
 })
 
-
+//delete the ticket of current id
+router.get("/delete/:id", [verifyToken, verifySeller],async(req,res)=>{
+    const {id} = req.params
+    // console.log(id)
+    try{
+        const matchingTicket = await Ticket.findById(id)
+        if(matchingTicket.seller_id != req.user._id) return res.status(403).json({message: "You do not own this ticket"})
+        let eventDate = new Date(matchingTicket.event.day)
+        eventDate.setDate(eventDate.getDate()+1)
+        const currentDate = new Date(Date.now()) 
+        if(eventDate > currentDate) return res.status(500).json({message: "Can't delete event until day after event"})
+        fs.unlink(path.join(__dirname, '../uploads/event-icons', matchingTicket.icon)).then((res)=>console.log(res)).catch((err)=>console.log(err))
+        await Transactions.deleteMany({ticket_id: id})
+        await Ticket.findByIdAndDelete(id)
+        return res.status(200).json({message: "Ticket and ticket data deleted successfully"})
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json({message: error.message})
+    }
+})
 
 
 router.post("/purchase/:id",async(req,res)=>{

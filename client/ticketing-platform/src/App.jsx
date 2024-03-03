@@ -20,6 +20,7 @@ import SellerTicketStats from "./pages/SellerTicketStats"
 import SellerDashboard from "./pages/SellerDashboard"
 import NotFound from "./pages/NotFound"
 import Landing from "./pages/Landing"
+import TOS from "./pages/TOS"
 
 export default function App() {
   // const location = useLocation()
@@ -86,6 +87,7 @@ export default function App() {
         <Route path="/boarding" Component={BoardSeller}></Route>
         <Route path = "/seller/create" Component={CreateTicket  }></Route>
         <Route path = "/scan" Component = {Scan}></Route>
+        <Route path="/legal/tos" Component={TOS}></Route>
         {/* <Route path="/seller/dashboard" Component={SellerDashboard}></Route> */}
         {/* <Route path="/seller/checkout" Component={SellerCheckout}></Route> */}
         <Route path="/seller/transactions" Component={SellerTransactions}></Route>

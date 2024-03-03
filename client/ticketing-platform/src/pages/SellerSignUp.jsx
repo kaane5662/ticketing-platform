@@ -34,7 +34,7 @@ export default function SellerSignUp(){
                     
                     <div className="flex gap-8 max-lg:gap-4 max-lg:self-center items-center">
                         <input onChange={()=>{setCheck(!check)}} type="checkbox" className=" h-[20px] w-[20px] focus:bg-complementary checked:bg-complementary checked:border-transparent  "></input>
-                        <h3 className="text-md max-lg:text-sm max-w-[80%]">I agree to the <Link to="/legal/termsofservice" className="underline hover:text-complementary">SwftT Terms of Service</Link> and the <a className="underline hover:text-complementary" href="https://stripe.com/legal/connect-account">Stripe Conncected Payments Agreement</a> </h3>
+                        <h3 className="text-md max-lg:text-sm max-w-[80%]">I agree to the <Link to="/legal/tos" className="underline hover:text-complementary">SwftT Terms of Service</Link> and the <a className="underline hover:text-complementary" href="https://stripe.com/legal/connect-account">Stripe Conncected Payments Agreement</a> </h3>
                     </div>
                     <button disabled={!check} type="submit" className={`font-bold bg-complementary max-lg:self-center rounded-sm h-[55px] max-md:h-[80px] w-[250px] text-primary ${!check? "  bg-opacity-40":"hover:scale-105 duration-300 "} `}>Create Connect ></button>
                 </form>
