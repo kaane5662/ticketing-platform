@@ -7,6 +7,8 @@ import Popup from "../components/Popup"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faArrowLeft, faCheck, faLocation, faLocationPin, faMapLocationDot, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useParams } from "react-router-dom"
+import { ToastContainer, toast } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
 
 const photos = ["concert1.jpg", "concert2.jpeg", "concert3.jpg", "concert4.jpg", "concert5.jpg"]
 
@@ -44,6 +46,7 @@ export default function Ticket(){
             console.log(response.data)
             window.location.href = response.data.url
         }).catch((error)=>{
+            toast.error(error.response?.data?.message || "An unexpected error has occured   ")
             console.log(error)
         })
     }
@@ -85,7 +88,9 @@ export default function Ticket(){
         <>
         
         <div className=" min-h-screen bg-primary flex items-center justify-center text-secondary font-poppins max-lg:py-20 ">
-            {popUpActive ? <Popup setActive={setPopUpActice} success = {success}></Popup>: null}
+            {/* {popUpActive ? <Popup setActive={setPopUpActice} success = {success}></Popup>: null}
+             */}
+             <ToastContainer></ToastContainer>
             <motion.div 
             initial={{
                 opacity: 0,
