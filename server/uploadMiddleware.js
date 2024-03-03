@@ -23,8 +23,16 @@ const eventImagesStorage = multer.diskStorage({
       cb(null, uniqueFilename);
     },
 });
+
+const iconFileFilter = function (req, file, cb) {
+  // Check if the file is an image
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      return cb(new Error('Only image files are allowed!'), false);
+  }
+  cb(null, true);
+};
   
-const uploadEventIcons = multer({ storage: eventIconStorage });
+const uploadEventIcons = multer({ storage: eventIconStorage, fileFilter: iconFileFilter });
 const uploadEventImages = multer({storage: eventImagesStorage});
 
 module.exports = {uploadEventIcons, uploadEventImages}

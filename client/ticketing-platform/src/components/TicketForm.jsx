@@ -167,7 +167,7 @@ export default function TicketForm({Data, ticket_id, edit}){
                 <div className="flex flex-col gap-4 col-span-4 ">
                     <h3>Ticket Icon</h3>
                     <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px]"/>
-                    <input name="icon" className="" onChange={(e)=>{setEventIcon(e.target.files[0]); handleChange(e)}} multiple={false} type="file"></input>
+                    <input name="icon" accept="image/*" onChange={(e)=>{setEventIcon(e.target.files[0]); handleChange(e)}} multiple={false} type="file"></input>
 
                     
                 </div>
