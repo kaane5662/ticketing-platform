@@ -28,9 +28,9 @@ export default function Scan(){
         console.log(data)
         axios.post(`${import.meta.env.VITE_SERVER}/tickets/checkin/${Ticket._id}`,{ticket_number: data}).then((response)=>{
             console.log("Ticket is valid")
-            toast.success("Checkin Successful")
+            toast.success(response.data.message)
         }).catch((error)=>{
-            toast.error(error.response?.data?.message || "An unexpected error has occured   ")
+            toast.error(error.response?.data?.message || "An unexpected error has occured   ", {autoClose: 500})
             console.log(error)
             // console.log("Ticket is invalid")
         })
@@ -61,7 +61,7 @@ export default function Scan(){
 
     return(
         <main className=" bg-primary h-screen flex justify-center text-secondary font-poppins">
-            <ToastContainer></ToastContainer>
+            <ToastContainer ></ToastContainer>
             {!Ticket ? (
                 <div className="flex gap-8 font-poppins  flex-col justify-center">
                     <FontAwesomeIcon className="h-16" spin icon={faCircleNotch}></FontAwesomeIcon>

@@ -21,12 +21,33 @@ export default function SellerTicketStats(){
     const getTicket = ()=>{
         axios.get(`${import.meta.env.VITE_SERVER}/seller/ticket/${id}`,{withCredentials: true}).then((response)=>{
             console.log(response.data)
-            setData(response.data || [])
+            let Data = response.data
+            //if the user used the old system
+            if(Data.ticket.tickets.length < 1 || Data.ticket.tickets == null){
+                console.log(true)
+                Data.ticket.tickets.push({price: Data.ticket.price, stock: Data.ticket.stock, name: "Entry"})
+            }
+            console.log("Data: ",Data.ticket)
+            setData(Data || [])
         }).catch((error)=>{
             console.log(error)
             if( error.response.status == 401 || error.response.status == 403) navigate("/login", {replace:true})
             console.log(error)
         })
+    }
+
+    const getTotalTicketsStock =(Ticket)=>{
+        if(Ticket.tickets == null || Ticket?.tickets.length < 0) return Ticket?.stock || 0
+        let totalStock = 0;
+        Ticket.tickets.forEach((ticket)=>{totalStock+= ticket.stock})
+        return totalStock
+    }
+
+    const getTotalTicketsSold =(Ticket)=>{
+        if(Ticket.tickets == null || Ticket.tickets.length < 0) return 0
+        let totalSold = 0;
+        Ticket.tickets.forEach((ticket)=>{totalSold+= ticket.sold || 0})
+        return totalSold
     }
 
     useEffect(()=>{
@@ -58,23 +79,23 @@ export default function SellerTicketStats(){
                 <h3 className=" text-lg tracking-wider">{new Date(Data?.ticket.event.day).toDateString()}: {convertTime(Data?.ticket.event.start_time)} -{convertTime(Data?.ticket.event.end_time)}</h3>
 
                 <h3 className="bg-complementary rounded-sm p-3 max-lg:self-center   text-md text-primary font-bold w-fit">{Data?.ticket.event_type || "House Party"}</h3>
-                <div className="flex gap-2 justify-between max-lg:grid max-lg:grid-cols-2 flex-wrap">
-                    <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
-                        <h3 className="font-bold">Tickets Sold</h3>
-                        <h3 className="text-sm">{Data?.transactions?.sold || 0}</h3>
+                <div className="grid grid-cols-3 gap-16 max-lg:gap-2 max max-lg:grid max-lg:grid-cols-3 flex-wrap">
+                    <div className="flex flex-col max-lg:px-2 gap-4 py-4 px-10 border-2 border-opacity-20 border-secondary">
+                        <h3 className="font-bold max-lg:text-sm ">Tickets Sold</h3>
+                        <h3 className="max-lg:text-xs text-sm">{getTotalTicketsSold(Data.ticket) || 0}</h3>
                     </div>
-                    <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
-                        <h3 className="font-bold">Remaining Stock</h3>
-                        <h3 className="text-sm">{Data?.ticket.stock || 32}</h3>
+                    <div className="flex flex-col gap-4 py-4 px-10 max-lg:px-2 border-2 border-opacity-20 border-secondary">
+                        <h3 className="font-bold max-lg:text-sm ">Remaining Stock</h3>
+                        <h3 className="max-lg:text-xs text-sm">{getTotalTicketsStock(Data.ticket) || 32}</h3>
                     </div>
-                    <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
-                        <h3 className="font-bold">Revenue Generated</h3>
-                        <h3 className="text-sm">${Data?.transactions?.revenue || 0}</h3>
+                    <div className="flex flex-col gap-4 py-4 px-10 max-lg:px-2 border-2 border-opacity-20 border-secondary">
+                        <h3 className="font-bold max-lg:text-sm ">Revenue Generated</h3>
+                        <h3 className="max-lg:text-xs text-sm">${Data?.transactions?.revenue.toFixed(2) || 0}</h3>
                     </div>
-                    <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
+                    {/* <div className="flex flex-col gap-4 py-4 px-6 border-2 border-opacity-20 border-secondary">
                         <h3 className="font-bold">Ticket Price</h3>
                         <h3 className="text-sm">${Data?.ticket.price || 32}</h3>
-                    </div>
+                    </div> */}
                 </div>
                 
                 <h1 className="font-bold text-xl">Overview</h1>

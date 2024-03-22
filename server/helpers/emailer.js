@@ -135,23 +135,35 @@ const sendStripeBoarded = async(User)=>{
     })
 }
 
-const sendTicketConfirmation = async(email, qrCodes, ticket_title, quantity, total)=>{
+const sendTicketConfirmation = async(email, qrCodeData, ticket_title, tickets, total, fees, address)=>{
     // console.log(qrCodes)
     // let qrCodeImagesHTML = '';
     // qrCodes.forEach(qrCodeDataURL => {
     //     qrCodeImagesHTML += `<img style="width:500px; height:500px" src="${qrCodeDataURL}" alt="QR Code"></img><br>`;
     // });
     // console.log(qrCodeImagesHTML)
+    let ticketGrid = ""
+    tickets.map((ticket, index)=>{
+        if(ticket.quantity > 0){
+
+            ticketGrid += `<tr style = "border-top: 1px solid rgba(0,0,0,.1); border-bottom: 1px solid rgba(0,0,0,.1);">`;
+            ticketGrid += `<td align="left" width="50%">${ticket.name}</td>`;
+            ticketGrid += `<td align="right" width="50%">$${ticket.price*ticket.quantity} x${ticket.quantity}</td>`;
+            ticketGrid += `</tr>`;
+        }
+    })
+
+
     await transporter.sendMail({
         from: process.env.EMAIL_DOMAIN,
         to: email,
         subject: `Ticket Confirmation Email ${ticket_title}`,
-        attachments: qrCodes.map((qrCode, index)=>{
+        attachments: qrCodeData.map((data, index)=>{
             return(
                 {
-                    filename: `qrCode${index}.png`,
+                    filename: `${data.ticket_title+data.quantity}.png`,
                     encoding: "base64",
-                    content: qrCode
+                    content: data.content
                 }
 
             )
@@ -160,23 +172,35 @@ const sendTicketConfirmation = async(email, qrCodes, ticket_title, quantity, tot
         <!DOCTYPE html>
         <html lang="en">
         <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Confirmation Email</title>
         </head>
         <body>
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2>x${quantity}${ticket_title}: $${total/100}</h2>
-                <p>Dear User,</p>
-                <p>
-                    Your purchase has been successful.
-                </p>
-                <p>
-                    You are now eligible to checkin to the event with the provided QR Code/s
-                    
-                </p>
-                
-                <p>Best Regards,<br>SwftT</p>
+                <h1 style = "text-align: center">Purhcase Successful</h1> 
+                <h2  style = "text-align: center">${ticket_title}</h2> 
+                <table cellpadding="15px" cellspacing="10px"   width= "100%" style="border-collapse: collapse;">
+                    <tr>
+                        <td style = "font-weight: bold" align = "left" width = "50%">Name</td>
+                        <td style = "font-weight: bold" align = "right" width = "50%">Amount</td>
+                    </tr>
+                    ${ticketGrid}
+                    <tr>
+                        <td style = "" align = "left" width = "50%">Fees</td>
+                        <td style = "" align = "right" width = "50%">$${fees/100}</td>
+                    </tr>
+                    <tr>
+                        <td style = "font-weight: bold" align = "left" width = "50%">Total</td>
+                        <td style = "font-weight: bold" align = "right" width = "50%">$${total/100}</td>
+                    </tr>
+                </table>
+                <p  style = "font-weight:bold; text-align: center; ">${address}</p>
+                <p  style = "text-align: center; ">You can check in with the QR codes attached.</p>
+
             </div>
         </body>
         </html>

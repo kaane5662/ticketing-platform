@@ -1,11 +1,13 @@
-import { faDollarSign, faL, faTicket } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faDollarSign, faL, faTicket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios"
-import {useNavigate} from "react-router-dom"
+import {json, useNavigate} from "react-router-dom"
 import PlaceAutocomplete from "../components/PlaceAutocomplete";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InsertTicket from "./InsertTicket";
+// import Ticket from "../../../../server/schemas/Ticket";
 
 
 export default function TicketForm({Data, ticket_id, edit}){
@@ -36,6 +38,7 @@ export default function TicketForm({Data, ticket_id, edit}){
         'Tech Conference',
         // Add more event types as needed
       ]})
+    const [Tickets, setTickets] = useState([])
     const [changes, setChanges] = useState(false)
     const navigate = useNavigate()
     
@@ -44,21 +47,51 @@ export default function TicketForm({Data, ticket_id, edit}){
         e.preventDefault()
         // console.log(e.target.files.value)
         const formData = new FormData(e.currentTarget)
-        
+        let data = {}
+        data["tickets"] = Tickets
+        formData.forEach((value, key)=>{
+            if(key == "icon") return;
+            data[key] = value
+        })
+
+        console.log(data)
+        // console.log(Tickets)
+        // formData.append("tickets", JSON.stringify(Tickets))
+        // console.log(formData)
+        // console.log(formData.get("tickets"))
+
         // console.log(formData.get("event_images"))
         // console.log(formData.get("tags"))
+        // return;
         setChanges(true)
-        axios.post(`${import.meta.env.VITE_SERVER}/tickets`,formData,{
+        axios.post(`${import.meta.env.VITE_SERVER}/tickets`,data,{
             withCredentials: true,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }).then((response)=>{
+            // headers: {
+            //     'Content-Type': 'multipart/form-data'
+            // }
+        }).then(async (response)=>{
             // console.log(response.data.redirectUrl);
             // alert("Ticket created successfully")
             toast.success(response.data.message)
-            console.log("Ticket created successfully")
-            navigate("/seller/tickets")
+            try{
+                const imageProcessed = await axios.post(`${import.meta.env.VITE_SERVER}/tickets/upload/${response.data.ticket_id}`,formData,{
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                
+            }catch(error){
+                
+                toast.error("Invalid icon: Please update your icon on the edit page" )
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+            }
+                
+
+            navigate(`/seller/ticket/${response.data.ticket_id}`)
+            // console.log("Ticket created successfully")
+            
         }).catch((error)=>{
             setChanges(false)
             console.log(error)
@@ -74,7 +107,15 @@ export default function TicketForm({Data, ticket_id, edit}){
         // console.log(e.target.files.value)
         const formData = new FormData(e.currentTarget)
         
-        console.log(formData.get("address"))
+        const data = {}
+        // data["tickets"] = Tickets
+        // formData.forEach((value, key)=>{
+        //     data[key] = value
+        // })
+        // console.log(data)
+        formData.append("tickets", JSON.stringify(Tickets))
+        // console.log(formData.get("tickets"))
+        // return;
         // console.log(formData.get("eventicon"))
         axios.put(`${import.meta.env.VITE_SERVER}/tickets/${Data.ticket._id}`,formData,{
             withCredentials: true,
@@ -106,8 +147,13 @@ export default function TicketForm({Data, ticket_id, edit}){
         })
     }
 
+    const insertTicket = (e)=>{
+        e.preventDefault()
+        setTickets([...Tickets, {name:null, price:null, stock:null}])
+    }
+
     const handleChange = (e)=>{
-        toast.warn("Attention you have unsaved changes")
+        toast.warn("Attention you have unsaved changes", {autoClose: 250})
         // setChanges({...changes, [e.target.name]:e.target.value })
         setChanges(true)
         console.log(changes)
@@ -115,19 +161,20 @@ export default function TicketForm({Data, ticket_id, edit}){
 
     useEffect(()=>{
         checkAuthority()
+        setTickets(Data?.ticket?.tickets || [])
     },[])
 
     return(
         <div className=" bg-primary flex flex-col  text-secondary items-center font-poppins justify-center   ">
             <ToastContainer></ToastContainer>
             <form onSubmit={Data ? editTicket: generateTicket} onBlur={Data ? handleChange: null} className="grid-cols-4 grid gap-8 gird w-[60%] py-16 max-lg:w-[95%]">
-                <h1 className="text-5xl max-lg:text-4xl  col-span-4  font-bold">{Data ? "Edit Ticket": "Create Ticket" }</h1>
+                <h1 className="text-5xl max-lg:text-4xl  col-span-4  font-bold">{Data ? "Edit Event": "Create Event" }</h1>
                 <div className="flex flex-col gap-4 col-span-4  ">
-                    <h3>Ticket Title</h3>
+                    <h3>Event Title</h3>
                     <input name="title" defaultValue={Data?.ticket.title} className="title h-[40px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-4  ">
-                    <h3>Ticket Overview</h3>
+                    <h3>Event Overview</h3>
                     <textarea name="description" defaultValue={Data?.ticket.description} className="title h-[200px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 ">
@@ -156,16 +203,29 @@ export default function TicketForm({Data, ticket_id, edit}){
                     <h3>End Time</h3>
                     <input required name="end_time" defaultValue={Data?.ticket.event.end_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
                 </div>
-                <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
+                <h3 className="font-bold text-3xl">Tickets</h3>
+                <div className="flex flex-col gap-12 w-[100%] col-span-4">
+                    {Tickets.map((ticket, index)=>{
+                        return(
+                            <InsertTicket setChanges={setChanges} key={index} ticket={ticket}  index={index} setTickets={setTickets} Tickets={Tickets}></InsertTicket>
+                        )
+                    })}
+                    
+                    <button type= "button" onClick={insertTicket} className="bg-complementary w-fit font-bold text-primary px-10 py-4 rounded-sm hover:scale-105 duration-300">Add a Ticket</button>
+                        
+                    
+                </div>
+
+                {/* <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
                     <h3>Ticket Stock</h3>
                     <input required name="stock" defaultValue={Data?.ticket.stock} type="number" className="p-2 title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
                     <h3>Ticket Price</h3>
                     <input required name="price" defaultValue={Data?.ticket.price} step={.01} type="number" className="p-2 title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
-                </div>
+                </div> */}
                 <div className="flex flex-col gap-4 col-span-4 ">
-                    <h3>Ticket Icon</h3>
+                    <h3>Event Icon</h3>
                     <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px]"/>
                     <input name="icon" accept="image/*" onChange={(e)=>{setEventIcon(e.target.files[0]); handleChange(e)}} multiple={false} type="file"></input>
 

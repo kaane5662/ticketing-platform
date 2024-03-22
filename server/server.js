@@ -24,6 +24,7 @@ const session = require("express-session")
 const Profile = require("./schemas/Profile")
 const generateTicketNumber = require("./helpers/generateTicketNumber")
 const Ticket = require("./schemas/Ticket")
+const { compareSync } = require("bcryptjs")
 // app.use(session({
 //     secret: 'your-secret-key', // Replace with a strong, randomly generated string
 //     resave: false,
@@ -80,42 +81,88 @@ app.post("/webhook/platform",express.raw({ type: 'application/json' }) ,async (r
     }
 
     if(event.type == "checkout.session.completed"){
-        const {customer_details, metadata, amount_total} = event.data.object;
+        let {customer_details, metadata, amount_total} = event.data.object;
         console.log("Checkout completed")
         //fields for customer_details
         // generate a random integer ticket number within the range of minTicketNumber and maxTicketNumber
         try{
             
-            const qrs = []
+            const qrData = []
             const date = new Date(metadata.date)+1
             let currentDate = new Date(metadata.day);
-
+            let matchingTicket = await Ticket.findById(metadata.ticket_id)
+            let userTickets = JSON.parse(metadata.tickets)
+            const ticketsMap = {}
+            //asign a map for the tickets metadata
+            userTickets.forEach((ticket, index)=>{
+                // console.log(ticketVariant)
+                ticketsMap[ticket.name] =ticket
+            })
+            // console.log("Map: " +ticketsMap)
             // Add one day to the current date
             currentDate.setDate(currentDate.getDate() + 1);
-            for(let i = 0; i < metadata.quantity; i++){
-                const generateRandomTicketNumber = generateTicketNumber();
-                const qrGen = qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
-                qrs.push(qrGen)
-                const newTransaction = new Transactions({
-                    email: customer_details.email,
-                    ticket_id: metadata.ticket_id,
-                    expiration_date: currentDate,
-                    amount: Math.floor(amount_total/metadata.quantity)/100,
-                    ticket_number: generateRandomTicketNumber,
-                    ticket_title: metadata.ticket_title
-                })
-                await newTransaction.save()
+            console.log(matchingTicket.tickets)
+            for(let i = 0; i < matchingTicket?.tickets?.length; i++){
+                //find matching ticket from metadata
+                const ticketData = ticketsMap[matchingTicket.tickets[i].name]
+                // console.log("Mapped Data:",ticketData)
+                // console.log("Current Ticket:",matchingTicket.tickets[i])
+                if(!ticketData) continue
+               
+                
+                for(let j = 0; j < ticketData.quantity; j++){
+                    if(matchingTicket.tickets[i].stock >0) matchingTicket.tickets[i].stock -= 1
+                    matchingTicket.tickets[i].sold += 1; 
+                    const generateRandomTicketNumber = generateTicketNumber();
+                    const newTransaction = new Transactions({
+                        email: customer_details.email,
+                        ticket_id: metadata.ticket_id,
+                        expiration_date: currentDate,
+                        amount: matchingTicket.tickets[i].price,
+                        ticket_number: generateRandomTicketNumber,
+                        ticket_title: matchingTicket.tickets[i].name
+                    })
+                   
+                    const qrGen =  qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
+                    qrData.push({content: qrGen, ticket_title: matchingTicket.tickets[i].name, quantity: j+1})
+                    await newTransaction.save()
+                }
+                delete ticketsMap[matchingTicket.tickets[i].name]
             }
-            await Ticket.findByIdAndUpdate(metadata.ticket_id,{$inc: {stock: -metadata.quantity}})
-           
-            await sendTicketConfirmation(customer_details.email,qrs,metadata.ticket_title,metadata.quantity, amount_total)
+            //there are some keys remaning, tickets either got deleted during processing or renamed
+            const remainingKeys = Object.keys(ticketsMap)
+            // console.log(remainingKeys)
+            // console.log(ticketsMap)
+            for(let i = 0; i < remainingKeys.length; i++){
+                matchingTicket.stock -= 1;
+                const key = remainingKeys[i];
+                for(let j = 0; j< ticketsMap[key].quantity; j++){
+                    const generateRandomTicketNumber = generateTicketNumber();
+                    const newTransaction = new Transactions({
+                        email: customer_details.email,
+                        ticket_id: metadata.ticket_id,
+                        expiration_date: currentDate,
+                        amount: ticketsMap[key].price,
+                        ticket_number: generateRandomTicketNumber,
+                        ticket_title: key
+                    })
+                    
+                    const qrGen = qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
+                    qrData.push({content: qrGen, ticket_title: key, quantity: j+1})
+                    await newTransaction.save()
+                }
+            }
+            await matchingTicket.save()
+            // await Ticket.findByIdAndUpdate(metadata.ticket_id,{$inc: {stock: -metadata.quantity}})
+            await sendTicketConfirmation(customer_details.email,qrData,metadata.ticket_title,userTickets, amount_total, metadata.fees, metadata.ticket_address)
+            console.log("Confirmation Sent")
             return res.status(200).send()
         }catch(error){
             console.log(error.message)
             return res.status(500).send()
         }      
 
-        return res.status(500).send()
+        
         
     }
 
