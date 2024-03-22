@@ -1,5 +1,10 @@
 const mongoose = require("mongoose")
 
+// const ticketVariantsSchema = new Schema({
+//     name: { type: String, required: true },
+//     price: { type: Number, required: true },
+//     stock: { type: Number, required: true }
+// });
 
 const TicketSchema = new mongoose.Schema({
     title: {
@@ -8,23 +13,23 @@ const TicketSchema = new mongoose.Schema({
     },
     description: {
         type:String,
-        required: true
+        required: false
     },
-    stock: {
+    stock: {//deprecated
         type: Number,
-        required: true
+        required: false
     },
     seller_id: {
         type:String,
         required: true
     },
-    price: {
+    price: {//deprecated
         type: Number,
-        required: true
+        required: false
     },
     icon: {
         type:String,
-        required: true
+        default: ""
     },
     checkin_code: {
         type: String,
@@ -46,6 +51,12 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    tickets:[{
+        name: {type:String, required:true},
+        price: {type:Number, required:true},
+        stock: {type:Number, require:true},
+        sold: {type: Number, default: 0}
+    }],
     event: {
         start_time: {
             type:String, 

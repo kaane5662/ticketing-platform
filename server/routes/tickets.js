@@ -14,8 +14,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const { errorMonitor } = require("events")
 //route that allows sellers to create a application
-router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
-    const {title, description,stock,price,line,state,event_type,address,day, start_time, end_time} = req.body
+router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
+    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
     
     
 //     res.set('Location', `${process.env.CLIENT_DOMAIN}/seller/verify`);
@@ -28,23 +28,34 @@ router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"ico
     try{
         // const matchingProfile = Profile.findById(req.user._id)
         // console.log("hi")
-        console.log(req.files["icon"])
+        // console.log(req.file)
         // console.log("stock")
+        console.log(req.body)
         if(title.length < 5) return res.status(500).json({message: "Title is too short"})
-        if(description.length < 5) return res.status(500).json({message: "Description is too short"})
+        if(tickets.length < 1) return res.status(400).json({message: "Must have at least one ticket"})
+        if(description.length < 5) description = ""
         if(address.length < 5) return res.status(500).json({message: "Description is too short"})
-        if(stock < 1) return res.status(500).json({message: "Invalid stock"})
-        if(price < 0 || price < 1 || Math.round(price * 100) != Math.floor(price*100) ) return res.status(500).json({message: "Invalid price"})
+    
+        //tickets validation
+        for(let i = 0; i < tickets.length; i++){
+            console.log(tickets[i])
+            if( typeof(tickets[i].price) != "number" || typeof(tickets[i].stock)!= "number" ) return res.status(400).json({message:`Invalid input type: ${tickets[i].name}`})
+            if(tickets[i].price < 0 || tickets[i].price < .5  ) return res.status(500).json({message: `Invalid price: ${tickets[i].name}`})
+            if(tickets[i].stock < 0) return res.status(500).json({message: `Invalid stock : ${tickets[i].name}`})
+
+        }
+        // return;
         // console.log(req.user)
         const newTicket = new Ticket({
             title,
             description,
-            stock,
-            price,
+            // stock,
+            // price,
+            tickets: tickets,
             event_type,
             checkin_code: generateCheckInCode(),
             seller_id: req.user._id,
-            icon: req.files["icon"][0].filename,
+            // icon: req.file.filename,
             address,
             event: {
                 start_time,
@@ -52,8 +63,8 @@ router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"ico
                 day
             }
         })
-        const savedTicket = newTicket.save()
-        return res.status(201).json({message: "Ticket successfully created"})
+        const savedTicket = await newTicket.save()
+        return res.status(201).json({message: "Ticket contents created successfully", ticket_id: savedTicket._id})
     }catch(error){
         console.log(error.message)
         return res.status(500).json({message: error.message})
@@ -61,19 +72,39 @@ router.post("/" ,[verifyToken, verifySeller ,uploadEventIcons.fields([{name:"ico
     
 })
 
+router.post("/upload/:id",[verifyToken, verifySeller, uploadEventIcons.single("icon")], async(req,res)=>{
+    const {id} = req.params
+    console.log(req.file.filename)
+    try{
+        const updatedIcon = await Ticket.findByIdAndUpdate(id, {icon: req.file.filename})
+        res.status(200).json({message: "Icon uploaded successfully"})
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json({message: error.message})
+    }
+})
 
 router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
     const {id} = req.params
-    const {title, description,stock,price,line,state,event_type,address,day, start_time, end_time} = req.body
+    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
     console.log(price)
     try{
         // console.log(price>40)
         if(title && title.length < 5) return res.status(500).json({message: "Title is too short"})
         if(description && description.length < 5) return res.status(500).json({message: "Description is too short"})
         if(address && address.length < 5) return res.status(500).json({message: "Description is too short"})
-        if(stock && stock < 0) return res.status(500).json({message: "Invalid stock"})
-       
-        if( price && (price < 0 || price < 1 || Math.round(price * 100) != Math.floor(price*100)) ) return res.status(500).json({message: "Invalid price"})
+        //this is formData so neccesary
+        tickets = await JSON.parse(tickets)
+        if(tickets.length < 1) return res.status(400).json({message: "Must have at least one ticket"})
+        console.log(tickets)
+        //tickets validation
+        for(let i = 0; i < tickets.length; i++){
+            console.log(tickets[i])
+            if( typeof(tickets[i].price) != "number" || typeof(tickets[i].stock)!= "number" ) return res.status(400).json({message:`Invalid input type: ${tickets[i].name}`})
+            if(tickets[i].price < 0 || tickets[i].price < 1  ) return res.status(500).json({message: `Invalid price: ${tickets[i].name}`})
+            if(tickets[i].stock < 1) return res.status(500).json({message: `Invalid stock : ${tickets[i].name}`})
+
+        }
         // return
         const matchingTicket = await Ticket.findById(id)
         
@@ -87,6 +118,7 @@ router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"i
         if(start_time) matchingTicket.event.start_time = start_time
         if(end_time) matchingTicket.event.end_time = end_time
         if(event_type) matchingTicket.event_type = event_type
+        if(tickets) matchingTicket.tickets = tickets
         if(req.files["icon"]) matchingTicket.icon = req.files["icon"][0].filename
         await matchingTicket.save()
         return res.status(200).json({message: "Ticket updated successfully"})
@@ -120,26 +152,51 @@ router.get("/delete/:id", [verifyToken, verifySeller],async(req,res)=>{
 
 router.post("/purchase/:id",async(req,res)=>{
     const {id} = req.params
-    const {quantity} = req.body
+    const {tickets} = req.body
     try {
         const matchingTicket = await Ticket.findById(id)
-        console.log(quantity)
+        // console.log(quantity)
         // console.log(matchingTicket)
         const matchingSeller = await Profile.findById(matchingTicket.seller_id)
         if(matchingSeller.stripe_connected_id == null) return res.status(500).json({message: "Ticket does not have a connected stripe account somehow"})
-        if(matchingTicket.stock-quantity <= 0) return res.status(500).json({message: "Ticket has run out of stock!"})
+        // if(matchingTicket.stock-quantity <= 0) return res.status(500).json({message: "Ticket has run out of stock!"})
+        // console.log(matchingTicket.price)
+        const ticketVariants = matchingTicket.tickets.length > 0 ? matchingTicket.tickets : [{name: "Entry", price: matchingTicket.price, stock: matchingTicket.stock}]
+        //set up map
+        const ticketsMap = {}
+        ticketVariants.forEach((ticketVariant, index)=>{
+            // console.log(ticketVariant)
+            ticketsMap[ticketVariant.name] =ticketVariant
+        })
+        //loop through client tickets
+        let totalPrice = 0;
+        let quantityTax = 0;
+        let purchaseData = ""
+        for(let i = 0; i < tickets.length; i++){
+            const ticket = tickets[i]
+            //check through the database ticket map
+            const ticketData = ticketsMap[ticket.name]
+            if(!ticketData) return res.status(400).json({message: "A specific ticket has not been found, this means a ticket was either modified or removed, please refresh the page"})
+            if(ticket.quantity <= 0) continue
+            const avaliableStock = ticketData.stock - ticket.quantity
+            console.log(avaliableStock)
+            if(avaliableStock< 0) return res.status(400).json({message: `Not enough stock for: ${ticket.name}`})
+            console.log(ticketData)
+            totalPrice += ticketData.price * ticket.quantity
+            quantityTax += ticket.quantity*99
+            purchaseData += ticket.name +" x"+ticket.quantity+": $"
+            purchaseData += (ticketData.price * ticket.quantity) +", "
+        }
         
-        // const applicationFee = Math.floor(totalCost*.15)
-        // console.log(totalCost, applicationFee)
-        //$30   30 * 100 * 1.08 + 50
+        totalPrice *= 100;
+        let totalTax = Math.floor(totalPrice*.1)
+        const buyerPrice = Math.floor(totalPrice + quantityTax + totalTax)
+        const applicationFee = Math.ceil(quantityTax+totalTax)
+        purchaseData += "Fees: $"+applicationFee/100
 
-        const price = Math.ceil(matchingTicket.price * quantity * 100)
-        const qTax = quantity*99
-        const totalTax = Math.floor(price *.1)
-
-        const buyerPrice = price+qTax+totalTax;
-        const stripeProcessing = Math.floor( (buyerPrice*.029+30) );
-        console.log(stripeProcessing)
+        // console.log(ticketMap)
+        console.log(tickets)
+        
 
         const session = await stripe.checkout.sessions.create({
             success_url: `${process.env.CLIENT_DOMAIN}/tickets`,
@@ -148,7 +205,7 @@ router.post("/purchase/:id",async(req,res)=>{
                     currency: 'usd',
                     product_data: {
                       name: matchingTicket.title,
-                      description: matchingTicket.description +`\n x${quantity}`,
+                      description: purchaseData + "\n" ,
                     },
                     unit_amount: buyerPrice, // Amount in cents (e.g., $10.00)
                   }
@@ -156,7 +213,7 @@ router.post("/purchase/:id",async(req,res)=>{
             ],
             mode: 'payment',
             payment_intent_data: {
-                application_fee_amount: qTax+totalTax, // calculate your 
+                application_fee_amount: applicationFee, // calculate your 
                 transfer_data: {
                     destination: matchingSeller.stripe_connected_id,
                 
@@ -166,7 +223,11 @@ router.post("/purchase/:id",async(req,res)=>{
                 ticket_id: id,
                 ticket_title: matchingTicket.title,
                 day: matchingTicket.event.day,
-                quantity: quantity
+                tickets: JSON.stringify(tickets),
+                fees: applicationFee,
+                ticket_address: matchingTicket.address
+                // ticket_map: JSON.stringify(ticketsMap)
+                // quantity: quantity
             }
         });
 
@@ -213,7 +274,7 @@ router.put("/checkin/:id", async(req,res)=>{
     const {id} = req.params
     const {checkin_code} = req.body
     try{
-        console.log(checkin_code)
+        // console.log(checkin_code)
         const matchingTicketWithCode = await Ticket.findOne({checkin_code, _id: id})
         if(matchingTicketWithCode == null){
             return res.status(500).json({message: "Invalid code"})
@@ -234,13 +295,14 @@ router.post("/checkin/:id", async(req,res)=>{
     // console.log("Hello")
     //warning: no check to see if the checking user is actually pat of the group
     try{
+        // console.log(ticket_number, id)
         const matchingTicketNumber = await Transactions.findOne({ticket_id:id, ticket_number})
         if(matchingTicketNumber == null ) return res.status(500).json({message: "Invalid code"})
         
-        if(matchingTicketNumber.expiration_date <= Date.now()) return res.status(500).json({message: "Ticket has expired"})
+        if(matchingTicketNumber.expiration_date <= Date.now()) return res.status(500).json({message: `Ticket has expired: ${matchingTicketNumber?.ticket_title || "Entry"}`})
         matchingTicketNumber.expiration_date = Date.now()
         await matchingTicketNumber.save()
-        return res.status(201).json({message: "Check in success"})
+        return res.status(201).json({message: `Check in success: ${matchingTicketNumber?.ticket_title || "Entry"}`})
         
     }catch(error){
         console.log(error.message)

@@ -32,7 +32,7 @@ export default function TicketDisplay({Ticket}){
                 <h3 className="text-xl max-md:text-sm"> { convertTime(Ticket.event.start_time)} - {convertTime(Ticket.event.end_time)}  </h3>
                 
                 
-                <h1 className="text-2xl">${Ticket.price}</h1>
+                {/* <h1 className="text-2xl">${Ticket.price}</h1> */}
             </div>
         </div>
            
