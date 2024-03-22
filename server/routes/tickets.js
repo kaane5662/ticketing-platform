@@ -13,7 +13,7 @@ const { verifySeller } = require("../sellerMiddleware")
 const fs = require('fs').promises;
 const path = require('path');
 const { errorMonitor } = require("events")
-//route that allows sellers to create a application
+//route that allows sellers to create a ticket
 router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
     let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
     
@@ -83,7 +83,7 @@ router.post("/upload/:id",[verifyToken, verifySeller, uploadEventIcons.single("i
         return res.status(500).json({message: error.message})
     }
 })
-
+//update the ticket contents
 router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
     const {id} = req.params
     let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
