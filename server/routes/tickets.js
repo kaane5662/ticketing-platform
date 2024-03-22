@@ -30,7 +30,7 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
         // console.log("hi")
         // console.log(req.file)
         // console.log("stock")
-        console.log(req.body)
+        // console.log(req.body)
         if(title.length < 5) return res.status(500).json({message: "Title is too short"})
         if(tickets.length < 1) return res.status(400).json({message: "Must have at least one ticket"})
         if(description.length < 5) description = ""
