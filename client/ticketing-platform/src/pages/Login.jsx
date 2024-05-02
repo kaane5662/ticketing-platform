@@ -25,14 +25,14 @@ export default function Login(){
     return(
         <main className=" bg-primary text-secondary h-screen font-poppins flex items-center justify-center">
             <ToastContainer></ToastContainer>
-            <form onSubmit={signIn} className="w-[40%] max-md:w-[90%] gap-6 flex flex-col rounded-sm border-secondary md:border-2 border-opacity-20 p-12 px-18 max-md:px-4">
+            <form onSubmit={signIn} className="w-[45%] max-md:w-[98%] gap-6 flex flex-col rounded-sm  p-12 max-md:px-4">
                 <h1 className="text-5xl font-bold text-center">Login</h1>
                 <h3 className="text-sm -mb-4">Email</h3>
-                <input placeholder="Enter your email" name="email" className="w-[100%] bg-secondary bg-opacity-0 h-[50px] p-2 border-secondary border-2 border-opacity-10 rounded-sm"></input>
+                <input placeholder="Enter your email" name="email" className="w-[100%] bg-secondary bg-opacity-0 p-3 border-secondary border-2 border-opacity-10 rounded-md text-md max-md:text-sm"></input>
                 <h3 className="text-sm -mb-4">Password</h3>
-                <input type="password" placeholder="Enter your password" name="password" className="w-[100%] bg-secondary bg-opacity-0  h-[50px] p-2 border-secondary border-2 rounded-sm border-opacity-10"></input>
+                <input type="password" placeholder="Enter your password" name="password" className="w-[100%] bg-secondary bg-opacity-0 p-3 border-secondary border-2 rounded-md border-opacity-10 text-md max-md:text-sm"></input>
                 <h3 className="text-sm">Don't have an account? <Link className="underline hover:text-complementary" to="/signup">Sign Up</Link></h3>
-                <button type="submit" className=" bg-complementary hover:scale-105 duration-300 text-primary h-[70px] rounded-sm font-bold text-xl">Sign In</button>
+                <button type="submit" className=" bg-complementary hover:scale-105 duration-300 text-primary p-5 rounded-md font-bold text-xl max-md:p-3 max-md:text-lg">Sign In</button>
             </form>
         </main>
     )

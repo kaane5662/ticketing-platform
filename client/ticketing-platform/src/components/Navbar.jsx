@@ -48,7 +48,7 @@ export default function Navbar(){
 
     return (
         <nav className="justify-between font-poppins text-secondary bg-primary items-center max-lg:bg-primary  absolute w-[100%] top-0   ">
-            <div className="flex justify-between lg:items-center   fixed w-[100%] p-4 max-lg:p-2 bg-primary ">
+            <div className="flex justify-between lg:items-center   fixed w-[100%] p-2 max-lg:p-2 bg-primary ">
 
                 
                 <img onClick={()=>navigate("/")} src="SwftTLogo.png" className="h-20 max-lg:h-10 px-4 "></img>  
@@ -57,23 +57,23 @@ export default function Navbar(){
                 
                 <div className="right flex gap-8 font-poppins items-center max-lg:hidden ">
                     {/* <h3  className="text-md hover:underline">{Profile?.email.split("@")[0]}</h3> */}
-                    <Link onClick={mobileHide} to="/tickets" className="text-md hover:underline hover:cursor-pointer">Explore Tickets</Link>
+                    <Link onClick={mobileHide} to="/tickets" className="text-md p-2 hover:border-t-2 hover:border-complementary">Explore Tickets</Link>
                     {Profile? 
                         <>
-                        <h3 onClick={handleLogOut} className="text-md hover:cursor-pointer hover:underline">Log out</h3>
+                        <h3 onClick={handleLogOut} className="text-md p-2 hover:border-t-2 hover:border-complementary hover:cursor-pointer">Log out</h3>
                         <h3 className="text-md">{Profile?.email.split("@")[0]}</h3>
                         </>
                         :
                         (
                             <>
-                            <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-md  hover:underline hover:cursor-pointer">Request a Demo</a>
-                            <Link  to="/login" className="text-md  hover:underline">Log in</Link>
-                            <Link  to="/signup" className="text-md  hover:underline">Sign Up</Link>
+                            <a href={import.meta.env.VITE_CALLENDLY_LINK} className="text-md      p-2 hover:border-t-2 hover:border-complementary">Request a Demo</a>
+                            <Link  to="/login" className="text-md p-2 hover:border-t-2 hover:border-complementary">Log in</Link>
+                            <Link  to="/signup" className="text-md  p-2 hover:border-t-2 hover:border-complementary">Sign Up</Link>
                             </>
                         )
                     }
                     
-                    <Link to="/seller/tickets" className="p-4 px-8 hover:scale-105 duration-300 rounded-sm bg-complementary border-opacity-70 font-bold text-md text-primary "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
+                    <Link to="/seller/tickets" className="p-4 px-6 hover:scale-105 duration-300 rounded-sm   bg-complementary border-opacity-70 font-bold text-md text-primary "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
                 </div>
                 <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer z-20"></FontAwesomeIcon>
             {/* mobile menu */}

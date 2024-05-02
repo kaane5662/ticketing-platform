@@ -12,7 +12,7 @@ const generateCheckInCode = require("../helpers/generateCheckInCode")
 const { verifySeller } = require("../sellerMiddleware")
 const fs = require('fs').promises;
 const path = require('path');
-const { errorMonitor } = require("events")
+
 //route that allows sellers to create a ticket
 router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
     let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body

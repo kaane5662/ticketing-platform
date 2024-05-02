@@ -29,17 +29,17 @@ export default function SignUp(){
     return(
         <main className=" bg-primary text-secondary min-h-screen font-poppins flex items-center justify-center">
             <ToastContainer></ToastContainer>
-            <form onSubmit={createAccount} className="w-[40%] gap-3 flex flex-col rounded-sm border-secondary lg:border-2 border-opacity-20 p-12 px-24 max-lg:w-[90%] max-lg:p-4">
-                <h1 className="text-5xl font-bold text-center">Create Account</h1>
-                <h3 className="text-md text-center">Discover and secure your next unforgettable event with us.</h3>
+            <form onSubmit={createAccount} className="w-[45%] gap-4 flex flex-col rounded-sm  p-12 max-lg:w-[98%] max-lg:p-4">
+                <h1 className="text-5xl font-bold text-center max-md:text-4xl">Create Account</h1>
+                <h3 className="text-md max-md:text-sm text-center">Discover and secure your next unforgettable event with us.</h3>
                 <h3 className="text-sm -mb-2">Email</h3>
-                <input placeholder="Enter your email" name="email" className="w-[100%] bg-secondary bg-opacity-0 h-[50px] p-2 border-secondary border-2 border-opacity-10 rounded-sm"></input>
+                <input placeholder="Enter your email" name="email" className="w-[100%] bg-secondary bg-opacity-0 p-3 border-secondary border-2 border-opacity-10 rounded-sm max-md:text-sm"></input>
                 <h3 className="text-sm -mb-2">Password</h3>
-                <input type="password" placeholder="Enter your password" name="password" className="w-[100%] bg-secondary bg-opacity-0  h-[50px] p-2 border-secondary border-2 rounded-sm border-opacity-10"></input>
+                <input type="password" placeholder="Enter your password" name="password" className="w-[100%] bg-secondary bg-opacity-0  p-3 border-secondary border-2 rounded-sm border-opacity-10 max-md:text-sm"></input>
                 <h3 className="text-sm   -mb-2">Confirm Password</h3>
-                <input type="password" placeholder="Confirm your password" name="confirmpassword" className="w-[100%] bg-secondary bg-opacity-0  h-[50px] p-2 border-secondary border-2 rounded-sm border-opacity-10"></input>
+                <input type="password" placeholder="Confirm your password" name="confirmpassword" className="w-[100%] bg-secondary bg-opacity-0  p-3 border-secondary border-2 rounded-sm border-opacity-10 max-md:text-sm"></input>
                 <h3 className="text-sm">Already have an account? <Link className="underline hover:text-complementary" to="/login">Log In</Link></h3>
-                <button type="submit" className=" bg-complementary hover:scale-105 duration-300 text-primary h-[70px] rounded-sm font-bold text-xl">Sign Up</button>
+                <button type="submit" className=" bg-complementary rounded-md hover:scale-105 duration-300 text-primary p-5 font-bold text-xl max-md:text-lg max-md:p-3">Sign Up</button>
             </form>
         </main>
     )
