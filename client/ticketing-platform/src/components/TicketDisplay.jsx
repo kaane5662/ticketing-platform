@@ -18,7 +18,7 @@ export default function TicketDisplay({Ticket}){
 
     return(
         
-        <div onClick={()=>navigate(`/ticket/${Ticket._id}`)} className="flex flex-col gap-2 rounded-sm hover:scale-105 hover:cursor-pointer duration-300 text-secondary w-[100%] hover:bg-opacity-10 hover:bg-white p-4 max-md:p-0 rounded-xl">
+        <div onClick={()=>navigate(`/ticket/${Ticket._id}`)} className="flex flex-col gap-2 hover:scale-105 hover:cursor-pointer duration-300 text-secondary w-[100%] hover:bg-opacity-10 hover:bg-white p-4 max-md:p-0 rounded-xl">
             <img className="w-[100%] h-[175px] max-md:h-[125px] bg-complementary rounded-md object-cover " src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`}></img>
             <div className="flex flex-col gap-2  max-lg:gap-2">
 

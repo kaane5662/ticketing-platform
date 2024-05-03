@@ -116,16 +116,16 @@ export default function Ticket(){
     },[tickets])
 
     return(
-        <>
         
-        <div className=" min-h-screen bg-primary flex items-center justify-center text-secondary font-poppins max-lg:py-20 ">
+        
+        <div className=" min-h-screen bg-primary flex flex-col items-center justify-center text-secondary font-poppins max-lg:py-20 ">
             {/* {popUpActive ? <Popup setActive={setPopUpActice} success = {success}></Popup>: null}
              */}
              <ToastContainer></ToastContainer>
             <motion.div 
             initial={{
                 opacity: 0,
-                scale: 0,
+                scale: 1,
                 hidden: "true"
             }}
             whileInView={{
@@ -136,41 +136,74 @@ export default function Ticket(){
                 scale: 1
             }}
             transition={{
-                duration: 2,
+                duration: 4,
                 type:"spring",
                 damping: 10,
-                stiffness: 20,  
+                stiffness: 30,  
             }}
             viewport={{ once: true }}
-            className=" gap-8 flex max-lg:gap-4 flex-col w-[80%] max-lg:w-[90%]">
+            className="my-24 max-md:my-8 gap-4 flex max-lg:gap-4 flex-col w-[80%] max-lg:w-[90%]">
             
-                <div className="flex justify-center items-center gap-12 max-lg:gap-4 max-lg:flex-col">
+                <div className="flex justify-center items-center gap-4 max-lg:gap-4 flex-col">
 
-                    <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[500px] w-[500px] bg-complementary object-cover max-lg:h-[275px] max-lg:w-[330px]"/>
+                    <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[450px] w-[70%] bg-complementary object-cover max-lg:h-[220px] max-lg:w-[95%]  rounded-xl"/>
 
                     
-                    <div className="flex flex-col justify-center col-span-2 gap-6 max-w-[50%] max-lg:max-w-[95%] max-lg:gap-3 ">
-                        <div className="tags flex gap-4 ">
-                            <h1 className="bg-complementary p-2 px-4 inline-block rounded-sm justify-center items-center max-lg:text-sm text-primary font-bold">{Ticket.event_type}</h1>
-                            {/* <h1 className="bg-complementary p-2 inline-block rounded-full justify-center items-center text-primary font-bold">10:00PM</h1> */}
+                    <div className="flex flex-col justify-center col-span-2 gap-2 w-[60%] max-lg:w-[95%] max-lg:gap-3 ">
+                        
+                        
+                        <h1 className=" font-bold text-2xl max-lg:text-2xl">{Ticket.title}</h1>
+                        {/* <h3 className="text-lg max-lg:text-sm">Stock: {Ticket.stock}</h3> */}
+                        <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-md max-lg:text-sm hover:underline text-opacity-50  "> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
+                        <h1 className="text-complementary font-bold">{Ticket.event_type}</h1>
+                        <h1 className=" text-md tracking-wider max-lg:text-sm">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
+                        
+                        <h1 className="font-bold text-xl mt-8 ">Overview</h1>
+                        <h3 className="text-md max-md:text-sm " style={{whiteSpace: 'pre-line'   }}>{Ticket.description }</h3>
+        
+                    
+                        <h1 className="text-2xl font-bold mt-8 "> Tickets</h1>
+                    
+                        <div className="justify-center  items-center flex flex-col gap-4 w-[100%]">
+                            {/* ticket prices display */}
+                            {tickets.map((ticket, index)=>{
+                                return(
+                                    <div className="grid grid-cols-3 gap-20 max-lg:gap-4 items-center px-8 max-md:px-4 justify-center py-4 w-[100%] bg-white bg-opacity-5 rounded-xl">
+                                        <h1 className="text-md ">{ticket.name}</h1>
+                                        <div className="flex gap-8 max-lg:gap-4 justify-center items-center">
+                                            <FontAwesomeIcon onClick={()=>changeTicketVariantQuantity(index,-1)}  className="text-xl hover:text-primary hover:bg-complementary rounded-md duration-300 p-2 border-2 border-secondary border-opacity-0  items-center justify-center  " icon={faMinus}></FontAwesomeIcon>
+                                            <h3 className="text-md ">{ticket?.quantity}</h3>
+                                            <FontAwesomeIcon onClick={()=>changeTicketVariantQuantity(index,1)} className="text-xl hover:text-primary hover:bg-complementary rounded-md duration-300 p-2 border-2 border-secondary border-opacity-0    items-center justify-center" icon={faPlus}></FontAwesomeIcon>
+                                        </div>
+                                        <h1 className="text-md text-right line-clamp-3 tracking-widest ">${ticket.price}</h1>
+                                    </div>
 
+                                )
+                                
+                            })}
+                            
+                        <div className="flex flex-col py-4 w-[100%] gap-2">
+                            {/* bought tickets display */}
+                            {tickets.map((ticket,index)=>{
+                                return(
+                                    ticket.quantity > 0 ?
+                                        <div className="flex text-secondary text-opacity-80 justify-between">
+                                            <h3 className="text-md ">{ticket.name}</h3>
+                                            <h3 className="text-md tracking-widest">${ticket.price*ticket.quantity} <span className="text-sm  tracking-normal">x{ticket.quantity}</span></h3>
+                                            
+                                        </div>:null
+                                    
+                                    
+                                )
+                            })}
+                        </div>
+                        <div className="flex gap-8 items-center justify-between w-[100%]">
+                            <h1 className="text-lg ">Total</h1>
+                            <h1 className="text-3xl tracking-widest max-lg:text-lg">${total}</h1>   
+                        </div>
+                        <button disabled={total <=0} className={` w-[100%] py-4  bg-complementary text-xl max-md:text-md text-primary font-bold rounded-md  ${total <= 0? "bg-opacity-20":"duration-500 hover:scale-110 hover:bg-complementary2 hover:text-primary"}    `} onClick={handlePurchase}>Checkout</button>    
                         </div>
                         
-                        <h1 className=" font-bold text-4xl max-lg:text-3xl">{Ticket.title}</h1>
-                        {/* <h3 className="text-lg max-lg:text-sm">Stock: {Ticket.stock}</h3> */}
-                        <a href={`https://www.google.com/maps/search/${Ticket.address}`} target="_blank" rel="noopener noreferrer" className="text-xl max-lg:text-sm hover:underline text-opacity-50 font-bold "> <FontAwesomeIcon icon={faMapLocationDot}></FontAwesomeIcon> {Ticket.address}</a>
-                        <h1 className=" text-lg tracking-wider max-lg:text-sm">{new Date(Ticket.event.day).toDateString()}: {convertTime(Ticket.event.start_time)} -{convertTime(Ticket.event.end_time)}</h1>
-                        
-                            <h1 className="font-bold text-xl">Overview</h1>
-                            <h3 className="text-sm">{Ticket.description }</h3>
-                        
-                        {/* <h3 className="text-3xl font-thin text-opacity-50 line-clamp-3 tracking-widest"> ${ Ticket.price * quantity }<span className="text-sm tracking-normal">x{quantity}</span></h3> */}
-                        {/* <div className="flex gap-8 items-center max-lg:gap-4 justify-first">
-                            <FontAwesomeIcon onClick={()=>changeQuantity(-1)}  className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-10 bg-primary items-center justify-center" icon={faMinus}></FontAwesomeIcon>
-                            <h3 className="text-xl">{quantity}</h3>
-                            <FontAwesomeIcon onClick={()=>changeQuantity(1)} className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-10   bg-primary items-center justify-center" icon={faPlus}></FontAwesomeIcon>
-                            <button className=" w-[250px] h-[65px] bg-complementary text-xl text-primary font-bold rounded-sm duration-500 hover:scale-110 hover:bg-complementary2 hover:text-primary   " onClick={handlePurchase}>PURCHASE</button>
-                        </div> */}
                         
                         
                         
@@ -182,51 +215,7 @@ export default function Ticket(){
                 
             </motion.div>
         </div>
-        <div className="min-h-screen flex flex-col gap-8  bg-primary items-center max-md:p-4  text-secondary font-poppins    ">
-            <div className="flex flex-col gap-8 w-[50%] max-lg:w-[95%]">
-
-                <h1 className="text-5xl max-lg:text-4xl font-bold "> Tickets</h1>
-                <div className="justify-center  items-center flex flex-col gap-2 w-[100%]">
-                    {tickets.map((ticket, index)=>{
-                        return(
-                            <div className="grid grid-cols-3 gap-20 max-lg:gap-4 items-center border-secondary border-opacity-20 border-2 rounded-sm px-4 justify-center py-4 w-[100%]">
-                                <h1 className="text-xl max-lg:text-sm">{ticket.name}</h1>
-                                <div className="flex gap-8 max-lg:gap-2 items-center">
-                                    <FontAwesomeIcon onClick={()=>changeTicketVariantQuantity(index,-1)}  className="text-xl hover:text-primary hover:bg-complementary duration-300 p-2 border-2 border-secondary border-opacity-0 bg-primary items-center justify-center  max-lg:text-sm" icon={faMinus}></FontAwesomeIcon>
-                                    <h3 className="text-md max-lg:text-xs">{ticket?.quantity}</h3>
-                                    <FontAwesomeIcon onClick={()=>changeTicketVariantQuantity(index,1)} className="text-xl hover:text-primary hover:bg-complementary duration-300 max-lg:text-sm p-2 border-2 border-secondary border-opacity-0   bg-primary items-center justify-center" icon={faPlus}></FontAwesomeIcon>
-                                </div>
-                                <h1 className="text-xl line-clamp-3 tracking-widest max-lg:text-sm">${ticket.price}</h1>
-                            </div>
-
-                        )
-                        
-                    })}
-                    {tickets.map((ticket,index)=>{
-                            
-                    })}
-                    <div className="flex flex-col py-4 w-[100%] gap-2">
-                        {tickets.map((ticket,index)=>{
-                            return(
-                                ticket.quantity > 0 ?
-                                    <div className="flex text-secondary text-opacity-80 justify-between">
-                                        <h3 className="text-md ">{ticket.name}</h3>
-                                        <h3 className="text-md tracking-widest">${ticket.price*ticket.quantity} <span className="text-sm  tracking-normal">x{ticket.quantity}</span></h3>
-                                        
-                                    </div>:null
-                                
-                                
-                            )
-                        })}
-                    </div>
-                    <div className="flex gap-8 items-center justify-between py-4 w-[100%]">
-                        <h1 className="text-xl max-lg:text-lg">Total</h1>
-                        <h1 className="text-3xl tracking-widest max-lg:text-lg">${total}</h1>   
-                    </div>
-                    <button disabled={total <=0} className={` w-[100%] h-[55px] bg-complementary text-xl text-primary font-bold rounded-sm  ${total <= 0? "bg-opacity-20":"duration-500 hover:scale-110 hover:bg-complementary2 hover:text-primary"}    `} onClick={handlePurchase}>CHECKOUT</button>    
-                </div>
-            </div>
-        </div>
-        </>
+        
+        
     )
 }
