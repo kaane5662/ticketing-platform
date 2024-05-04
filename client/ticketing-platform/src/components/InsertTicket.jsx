@@ -45,20 +45,22 @@ export default function InsertTicket({Tickets, index, ticket,setTickets, setChan
     })
 
     return(
-        <div className="grid grid-cols-4 max-lg:grid-cols-2 gap-8 font-poppins text-secondary bg-primary border-b-2 border-secondary border-opacity-20 pb-8">
-            <div className="flex flex-col gap-4">
-                <h3 className="font-poppins">Ticket Name</h3>
-                <input type="text" onChange={handleNameChange} placeholder="Enter name" value={ticket?.name} className="h-[40px] w-full p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-sm"></input>
+        <div className="flex flex-col gap-2 font-poppins text-secondary relative bg-secondary bg-opacity-5 p-8 rounded-xl">
+
+            {/* <h3 className="font-poppins font-bold">Ticket details</h3> */}
+            <div className="flex flex-col text-md  gap-0">
+                <h3 className="font-poppins ">Ticket Name</h3>
+                <input type="text" onChange={handleNameChange} placeholder="Enter name" value={ticket?.name} className=" py-2 bg-secondary bg-opacity-0 w-fit border-b-2 border-secondary border-opacity-20 rounded-sm"></input>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex items-center text-sm gap-x-4 my-8">
                 <h3 className="font-poppins">Ticket Stock</h3>
-                <input type="number" onChange={handleStockChange} placeholder="Enter stock" value={ticket?.stock} className="h-[40px] w-full p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-sm"></input>
+                <input type="number" onChange={handleStockChange} placeholder="Enter stock" value={ticket?.stock} className="  w-fit  p-2 bg-secondary bg-opacity-0 border-b-2 border-secondary border-opacity-20 rounded-sm"></input>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex items-center text-sm gap-x-4">
                 <h3 className="font-poppins">Ticket Price</h3>
-                <input type="number" step={.01} onChange={handlePriceChange} placeholder="Enter price" value={ticket?.price} c className="h-[40px]  p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-full rounded-sm"></input>
+                <input type="number" step={.01} onChange={handlePriceChange} placeholder="Enter price" value={ticket?.price} c className="h-[40px]  p-2 bg-secondary bg-opacity-0 border-b-2 border-secondary border-opacity-20 w-fit rounded-sm"></input>
             </div>
-            <button onClick={handleRemove} type="button" className=" bg-red-500 h-8 w-8 rounded-sm text-xl hover:scale-105 duration-200">-</button>
+            <button onClick={handleRemove} type="button" className=" bg-red-500 p-1 px-4 absolute top-4 right-4  rounded-xl text-xl hover:scale-110 duration-200">-</button>
             
         </div>
     )
