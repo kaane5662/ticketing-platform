@@ -73,7 +73,7 @@ export default function Navbar(){
                         )
                     }
                     
-                    <Link to="/seller/tickets" className="p-4 px-6 hover:scale-105 duration-300 rounded-sm   bg-complementary border-opacity-70 font-bold text-md text-primary "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
+                    <Link to="/seller/tickets" className="p-4 px-6 hover:scale-105 duration-300 rounded-xl  bg-complementary bg-gradient-to-b from-complementary to to-complementary2 font-bold text-md text-primary "> {Profile ? "Switch to Selling":"Become a Seller"}</Link>
                 </div>
                 <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer z-20"></FontAwesomeIcon>
             {/* mobile menu */}

@@ -201,7 +201,7 @@ export default function Ticket(){
                             <h1 className="text-lg ">Total</h1>
                             <h1 className="text-3xl tracking-widest max-lg:text-lg">${total}</h1>   
                         </div>
-                        <button disabled={total <=0} className={` w-[100%] py-4  bg-complementary text-xl max-md:text-md text-primary font-bold rounded-md  ${total <= 0? "bg-opacity-20":"duration-500 hover:scale-110 hover:bg-complementary2 hover:text-primary"}    `} onClick={handlePurchase}>Checkout</button>    
+                        <button disabled={total <=0} className={` w-[100%] py-4  bg-complementary bg-gradient-to-b from-complementary to to-complementary2 text-xl max-md:text-md text-primary font-bold rounded-xl  ${total <= 0? " opacity-20":"duration-500 hover:scale-105"}    `} onClick={handlePurchase}>Checkout</button>    
                         </div>
                         
                         

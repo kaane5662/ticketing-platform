@@ -55,8 +55,11 @@ export default function SellerSidebar(){
             <div className="flex ">
                 { navbarActive ? 
                 (
-                    <div className="cointainer w-fit p-8 flex top-0 left-0 rounded-r-2xl border-r-2 border-r-secondary  border-opacity-10 text-secondary  h-screen  flex-col gap-8 justify-between flex-col absolute bg-primary ">
+                    <div className="cointainer w-fit p-8 flex top-0 left-0 rounded-r-md border-r-2 border-r-secondary  border-opacity-10 text-secondary  h-screen  gap-8 justify-between flex-col absolute bg-primary ">
                         <div className="flex flex-col gap-8">
+                           
+                            <img className="h-14 w-14" src="/SwftTLogo.png"></img>
+                                
                             <h3 className="font-bold">{Profile?.email.split("@")[0]}</h3>
                             <div onClick={createDashboardLink} className="flex gap-3 items-center relative hover:scale-105 duration-300 hover:cursor-pointer     ">
                                 <FontAwesomeIcon className=" w-5" icon={faGripVertical}></FontAwesomeIcon>
@@ -66,7 +69,7 @@ export default function SellerSidebar(){
                                 <FontAwesomeIcon className="w-5" icon={faCartShopping}></FontAwesomeIcon>
                                 <h3 className=" text-md">Transactions</h3>
                             </div> */}
-                            <div onClick={()=>{navigate("/seller/tickets");}} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
+                            <div onClick={()=>{navigate("/seller/tickets");}} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer  border-opacity-20 ">
                                 <FontAwesomeIcon className="w-5" icon={faTicketSimple}></FontAwesomeIcon>
                                 <h3 className=" text-md">Tickets</h3>
                             </div>
@@ -81,7 +84,7 @@ export default function SellerSidebar(){
                                 <h3 className=" text-md">Create Event</h3>
                             </div>
                         </div>
-                        <div className="flex gap-8 flex-col">
+                        <div className="flex gap-8 flex-col ">
                             
                             
                             <div onClick={updateStripeAccount} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">

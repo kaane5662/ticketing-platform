@@ -171,15 +171,15 @@ export default function TicketForm({Data, ticket_id, edit}){
                 <h1 className="text-5xl max-lg:text-4xl  col-span-4  font-bold">{Data ? "Edit Event": "Create Event" }</h1>
                 <div className="flex flex-col gap-4 col-span-4  ">
                     <h3>Event Title</h3>
-                    <input name="title" defaultValue={Data?.ticket.title} className="title h-[40px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
+                    <input name="title" defaultValue={Data?.ticket.title} className="title h-[40px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-4  ">
                     <h3>Event Overview</h3>
-                    <textarea name="description" defaultValue={Data?.ticket.description} className="title h-[200px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
+                    <textarea name="description" defaultValue={Data?.ticket.description} className="title h-[200px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 ">
                     <h3>Event Type</h3>
-                    <select required name="event_type" defaultValue={Data?.ticket.event_type} className=" h-[40px] bg-opacity-0 border-2 border-opacity-20 border-secondary    bg-secondary w-[250px] rounded-sm p-2" >
+                    <select required name="event_type" defaultValue={Data?.ticket.event_type} className=" h-[40px] bg-opacity-0 border-2 border-opacity-20 border-secondary    bg-secondary w-[250px] rounded-md p-2" >
                         {EventConstants?.EventTypes?.map((eventType, index)=>{
                             return(
 
@@ -193,27 +193,27 @@ export default function TicketForm({Data, ticket_id, edit}){
                 </div>
                 <div className="flex flex-col gap-4 col-span-2  max-lg:col-span-3 ">
                     <h3>Day</h3>
-                    <input required name="day" defaultValue={Data?.ticket.event.day}  type="date" className="title h-[40px] bg-secondary bg-opacity-0 border-2 p-2 border-secondary border-opacity-20"/>
+                    <input required name="day" defaultValue={Data?.ticket.event.day}  type="date" className="title h-[40px] bg-secondary bg-opacity-0 border-2 p-2 border-secondary border-opacity-20 rounded-md"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2 ">
                     <h3>Start Time</h3>
-                    <input required name="start_time" defaultValue={Data?.ticket.event.start_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
+                    <input required name="start_time" defaultValue={Data?.ticket.event.start_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
                     <h3>End Time</h3>
-                    <input required name="end_time" defaultValue={Data?.ticket.event.end_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
+                    <input required name="end_time" defaultValue={Data?.ticket.event.end_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
                 </div>
-                <h3 className="font-bold text-3xl">Tickets</h3>
-                <div className="flex flex-col gap-12 w-[100%] col-span-4">
+                <h3 className="font-bold text-xl">Tickets</h3>
+                <div className="grid grid-cols-2 max-md:grid-cols-1 gap-12 w-[100%] col-span-4">
                     {Tickets.map((ticket, index)=>{
                         return(
                             <InsertTicket setChanges={setChanges} key={index} ticket={ticket}  index={index} setTickets={setTickets} Tickets={Tickets}></InsertTicket>
                         )
                     })}
                     
-                    <button type= "button" onClick={insertTicket} className="bg-complementary w-fit font-bold text-primary px-10 py-4 rounded-sm hover:scale-105 duration-300">Add a Ticket</button>
-                        
                     
+                    
+                    <button type= "button" onClick={insertTicket} className="bg-complementary h-fit w-fit font-bold text-primary p-3 px-7 rounded-xl hover:scale-105 duration-300">+</button>
                 </div>
 
                 {/* <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
@@ -226,14 +226,14 @@ export default function TicketForm({Data, ticket_id, edit}){
                 </div> */}
                 <div className="flex flex-col gap-4 col-span-4 ">
                     <h3>Event Icon</h3>
-                    <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px]"/>
+                    <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px] rounded-xl"/>
                     <input name="icon" accept="image/*" onChange={(e)=>{setEventIcon(e.target.files[0]); handleChange(e)}} multiple={false} type="file"></input>
 
                     
                 </div>
                 {
                     Data ?
-                    <button disabled={!changes} type="submit" className={`col-span-4 px-12 p-4 max-lg:px-8 max-lg:text-md  w-fit text-lg bg-complementary font-bold text-primary rounded-sm ${!changes ? "bg-opacity-30": "hover:scale-105 duration-300"}   `}>Save Changes</button>
+                    <button disabled={!changes} type="submit" className={`col-span-4 px-12 p-4 max-lg:px-8 max-lg:text-md  w-fit text-lg bg-complementary bg-gradient-to-b from-complementary to to-complementary2 font-bold text-primary rounded-md ${!changes ? "opacity-30": "hover:scale-105 duration-300"}   `}>Save Changes</button>
                     :
                     <button type="submit" className="col-span-4 px-12 p-4 hover:scale-105 duration-300 w-fit text-lg bg-complementary font-bold text-primary rounded-sm max-lg:px-8 max-lg:text-md">Create Ticket</button>
                 }
