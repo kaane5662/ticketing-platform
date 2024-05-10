@@ -3,8 +3,9 @@ const router = express.Router()
 const bcryptjs = require("bcryptjs")
 const Profile = require("../schemas/Profile")
 const passport = require("../auth")
-const {verifyToken, generateToken} = require("../jwtMiddleware")
-const { sendSignUpConfirmation } = require("../helpers/emailer")
+const {verifyToken, generateToken, generateAuthToken, verifyResetToken} = require("../jwtMiddleware")
+const { sendSignUpConfirmation, sendPasswordResetInfo } = require("../helpers/emailer")
+
 
 
 router.post("/", async (req,res)=>{
@@ -60,6 +61,37 @@ router.get('/logout',[verifyToken] ,(req, res) => {
     res.clearCookie('token');
     res.sendStatus(200);
 });
+//send email reset password request
+router.post('/sendReset', async (req,res)=>{
+    
+    const {email} = req.body
+    try{
+        const User = await Profile.findOne({email: email.toLowerCase()})
+        if(!User) return res.status(500).json({message: "Invalid email"})
+        const token = generateAuthToken(User)
+        await sendPasswordResetInfo(User, token)
+        return res.status(200).json("Request send successfully")
+    }catch(error){
+        console.log(error.message)
+    }
+})
+//update password after email reset
+router.post('/reset', [verifyResetToken] ,async (req,res)=>{
+    
+    const {newpassword, confirmpassword} = req.body
+    try{
+        
+        if(newpassword != confirmpassword) return res.status(500).json({message: "Passwords must match"})
+        if(newpassword.length < 8) return res.status(500).json({message: "Passwords must be at least 8 characters"})
+        const hashedPassword = await bcryptjs.hash(newpassword, 10)
+        const User = await Profile.findById(req.user._id)
+        User.password = hashedPassword
+        await User.save()
+        return res.status(200).json("Password reset successful")
+    }catch(error){
+        console.log(error.message)
+    }
+})
 
 //google authenication
 router.get('/auth/google',

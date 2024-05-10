@@ -21,6 +21,8 @@ import SellerDashboard from "./pages/SellerDashboard"
 import NotFound from "./pages/NotFound"
 import Landing from "./pages/Landing"
 import TOS from "./pages/TOS"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 
 export default function App() {
   // const location = useLocation()
@@ -78,6 +80,8 @@ export default function App() {
         <Route path="/seller/*" Component={SellerSidebar} />
         <Route path = "/ticket/:id" Component={Ticket}></Route>
         <Route path="/tickets" Component={TicketDashboard}></Route>
+        <Route path="/forgotpassword" Component={ForgotPassword}></Route>
+        <Route path="/resetpassword" Component={ResetPassword}></Route>
         {/* <Route path = "/checkIn" Component={CheckIn}></Route> */}
         <Route path = "/signup" Component={SignUp}></Route>
         <Route path="/login" Component={Login}></Route>

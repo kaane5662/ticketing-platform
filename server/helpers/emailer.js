@@ -250,5 +250,46 @@ const sendSignUpConfirmation = async(User)=>{
 }
 
 
+const sendPasswordResetInfo = async(User, token)=>{
+    // console.log(qrCodes)
+    // let qrCodeImagesHTML = '';
+    // qrCodes.forEach(qrCodeDataURL => {
+    //     qrCodeImagesHTML += `<img style="width:500px; height:500px" src="${qrCodeDataURL}" alt="QR Code"></img><br>`;
+    // });
+    // console.log(qrCodeImagesHTML)
+    await transporter.sendMail({
+        from: process.env.EMAIL_DOMAIN,
+        to: User.email,
+        subject: `Password Reset Request`,
+        html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Confirmation Email</title>
+        </head>
+        <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Password Reset Request</h2>
+                <p>Dear User,</p>
+                <p>
+                    We've noticed you created a request to reset your password.
+                </p>
+                <p>
+                    If you didn't you can ignore this message. Otherwise you can reset your password <a href = ${process.env.CLIENT_DOMAIN}/resetpassword?token=${token}>here</a>
+                    
+                </p>
+                
+                
+                <p>Best Regards,<br>SwftT</p>
+            </div>
+        </body>
+        </html>
+        
+        `
+    })
+}
 
-module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation, sendSignUpConfirmation}
+
+module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation, sendSignUpConfirmation, sendPasswordResetInfo}
