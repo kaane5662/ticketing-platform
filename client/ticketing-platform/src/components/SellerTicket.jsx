@@ -29,7 +29,7 @@ export default function SellerTicket({Ticket}){
                 </div>
             </div>
             
-            <button className="bg-complementary bg-gradient-to-b from-complementary to to-complementary2 text-md p-2 px-6 rounded-2xl font-bold text-primary self-start text-center w-fit hover:scale-105 duration-500 max-md:p-1 max-md:px-2 max-md:text-sm">Edit</button>
+            <button className="bg-complementary bg-gradient-to-br from-complementary to to-complementary2 text-md p-2 px-6 rounded-2xl font-bold text-primary self-start text-center w-fit hover:scale-105 duration-500 max-md:p-1 max-md:px-2 max-md:text-sm">Edit</button>
             
         </div>
            
