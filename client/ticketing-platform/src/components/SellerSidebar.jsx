@@ -55,7 +55,7 @@ export default function SellerSidebar(){
             <div className="flex ">
                 { navbarActive ? 
                 (
-                    <div className="cointainer w-fit p-8 flex top-0 left-0 rounded-r-md border-r-2 border-r-secondary  border-opacity-10 text-secondary  h-screen  gap-8 justify-between flex-col absolute bg-primary ">
+                    <div className="cointainer w-fit p-6 flex top-0 left-0 border-r-secondary  border-opacity-10 text-secondary  h-screen  gap-8 justify-between flex-col absolute bg-primary">
                         <div className="flex flex-col gap-8">
                            
                             <img className="h-14 w-14" src="/SwftTLogo.png"></img>
@@ -63,7 +63,7 @@ export default function SellerSidebar(){
                             <h3 className="font-bold">{Profile?.email.split("@")[0]}</h3>
                             <div onClick={createDashboardLink} className="flex gap-3 items-center relative hover:scale-105 duration-300 hover:cursor-pointer     ">
                                 <FontAwesomeIcon className=" w-5" icon={faGripVertical}></FontAwesomeIcon>
-                                <h3 className=" text-md">Dashboard</h3>
+                                <h3 className=" text-sm">Dashboard</h3>
                             </div>
                             {/* <div onClick={()=>navigate("/seller/transactions")} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faCartShopping}></FontAwesomeIcon>
@@ -71,7 +71,7 @@ export default function SellerSidebar(){
                             </div> */}
                             <div onClick={()=>{navigate("/seller/tickets");}} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer  border-opacity-20 ">
                                 <FontAwesomeIcon className="w-5" icon={faTicketSimple}></FontAwesomeIcon>
-                                <h3 className=" text-md">Tickets</h3>
+                                <h3 className=" text-sm">Tickets</h3>
                             </div>
                             {/* <div onClick={()=>navigate("/seller/checkout")} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faMoneyBill}></FontAwesomeIcon>
@@ -81,7 +81,7 @@ export default function SellerSidebar(){
 
                             <div onClick={()=>{navigate("/seller/create"); }} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faSquarePlus}></FontAwesomeIcon>
-                                <h3 className=" text-md">Create Event</h3>
+                                <h3 className=" text-sm">Create Event</h3>
                             </div>
                         </div>
                         <div className="flex gap-8 flex-col ">
@@ -89,13 +89,13 @@ export default function SellerSidebar(){
                             
                             <div onClick={updateStripeAccount} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faColumns}></FontAwesomeIcon>
-                                <h3 className=" text-md">Update Account</h3>
+                                <h3 className=" text-sm">Update Account</h3>
                             </div>
                             
                             
                             <div onClick={()=>navigate("/tickets")} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faRightFromBracket}></FontAwesomeIcon>
-                                <h3 className=" text-md">Exit Creator</h3>
+                                <h3 className=" text-sm">Exit Creator</h3>
                             </div>
                         </div>
                     </div>
@@ -103,7 +103,7 @@ export default function SellerSidebar(){
 
                 }
                 
-                <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer text-secondary absolute right-4"></FontAwesomeIcon>
+                <FontAwesomeIcon onClick={()=>setNavbarActive(!navbarActive)} icon={faNavicon}  className="h-8 p-4 w-8 md:hidden hover:cursor-pointer text-secondary  text-sm absolute right-4"></FontAwesomeIcon>
             </div>
             
             
