@@ -40,7 +40,7 @@ export default function PlaceAutocomplete({original}){
         <div className="relative flex flex-col gap-8">
 
             <h3 className="text-md -mb-4">Event address</h3>
-            <input defaultValue={original} ref={placesRef}  onFocus={()=> setTogglePlaces(true)} onChange={handleAddress} name="address" placeholder="Enter address" className="text-secondary h-[45px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20  w-[100%] rounded-sm p-2"></input>
+            <input defaultValue={original} ref={placesRef}  onFocus={()=> setTogglePlaces(true)} onChange={handleAddress} name="address" placeholder="Enter address" className="text-secondary bg-secondary bg-opacity-5 border-secondary border-opacity-20  w-[100%] rounded-lg p-3"></input>
             { places.length > 0? 
 
                 <div className="flex flex-col absolute top-[100%] w-[100%] z-30 overflow-hidden">

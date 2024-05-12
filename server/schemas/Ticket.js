@@ -11,6 +11,10 @@ const TicketSchema = new mongoose.Schema({
         type:String,
         required: true
     },
+    published: {
+        type:Boolean,
+        default: false
+    },
     description: {
         type:String,
         required: false

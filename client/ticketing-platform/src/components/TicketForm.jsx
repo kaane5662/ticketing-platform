@@ -7,6 +7,7 @@ import PlaceAutocomplete from "../components/PlaceAutocomplete";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import InsertTicket from "./InsertTicket";
+import PublishTicket from "./Popups/PublishTicket";
 // import Ticket from "../../../../server/schemas/Ticket";
 
 
@@ -40,6 +41,9 @@ export default function TicketForm({Data, ticket_id, edit}){
       ]})
     const [Tickets, setTickets] = useState([])
     const [changes, setChanges] = useState(false)
+    const [canPublish, setCanPublish] = useState(true)
+
+    const [canDisplayPublishPopup, setDisplayPublishPopup] = useState(false)
     const navigate = useNavigate()
     
     // const filesRef = useRef([])
@@ -54,14 +58,10 @@ export default function TicketForm({Data, ticket_id, edit}){
             data[key] = value
         })
 
-        console.log(data)
-        // console.log(Tickets)
-        // formData.append("tickets", JSON.stringify(Tickets))
-        // console.log(formData)
-        // console.log(formData.get("tickets"))
+        data["published"] = canPublish
 
-        // console.log(formData.get("event_images"))
-        // console.log(formData.get("tags"))
+        console.log(data)
+        
         // return;
         setChanges(true)
         axios.post(`${import.meta.env.VITE_SERVER}/tickets`,data,{
@@ -114,6 +114,7 @@ export default function TicketForm({Data, ticket_id, edit}){
         // })
         // console.log(data)
         formData.append("tickets", JSON.stringify(Tickets))
+        formData.append("published", canPublish)
         // console.log(formData.get("tickets"))
         // return;
         // console.log(formData.get("eventicon"))
@@ -131,6 +132,8 @@ export default function TicketForm({Data, ticket_id, edit}){
             toast.error(error.response?.data?.message || "An unexpected error has occured   ")
             console.log(error)
         })
+
+        
         
         // console.log(e.currentTarget)
 
@@ -165,25 +168,32 @@ export default function TicketForm({Data, ticket_id, edit}){
     },[])
 
     return(
-        <div className=" bg-primary flex flex-col  text-secondary items-center font-poppins justify-center   ">
+        <div className=" bg-primary flex flex-col  text-secondary items-center font-poppins justify-center ">
+            
             <ToastContainer></ToastContainer>
-            <form onSubmit={Data ? editTicket: generateTicket} onBlur={Data ? handleChange: null} className="grid-cols-4 grid gap-8 gird w-[60%] py-16 max-lg:w-[95%]">
+            <form onSubmit={Data ? editTicket: generateTicket} onBlur={Data ? handleChange: null} className="grid-cols-4 grid gap-8 w-[60%] py-16 max-lg:w-[95%] ">
+                <div className="flex justify-center  col-span-4 ">
+
+                    {canDisplayPublishPopup && (<PublishTicket onSubmit={Data ? editTicket: generateTicket} setActive={setDisplayPublishPopup}></PublishTicket>)}
+                </div>
+
+                
                 <h1 className="text-5xl max-lg:text-4xl  col-span-4  font-bold">{Data ? "Edit Event": "Create Event" }</h1>
                 <div className="flex flex-col gap-4 col-span-4  ">
                     <h3>Event Title</h3>
-                    <input name="title" defaultValue={Data?.ticket.title} className="title h-[40px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
+                    <input required placeholder="Enter event title..." name="title" defaultValue={Data?.ticket.title} className="title p-3 bg-secondary bg-opacity-5 border-secondary border-opacity-20 rounded-lg"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-4  ">
                     <h3>Event Overview</h3>
-                    <textarea name="description" defaultValue={Data?.ticket.description} className="title h-[200px] p-2 bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
+                    <textarea placeholder="Enter event description..." name="description" defaultValue={Data?.ticket.description} className="title h-[200px] p-3 bg-secondary bg-opacity-5   border-secondary border-opacity-20 rounded-lg"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 ">
                     <h3>Event Type</h3>
-                    <select required name="event_type" defaultValue={Data?.ticket.event_type} className=" h-[40px] bg-opacity-0 border-2 border-opacity-20 border-secondary    bg-secondary w-[250px] rounded-md p-2" >
+                    <select required name="event_type" defaultValue={Data?.ticket.event_type} className="  bg-opacity-5 border-opacity-20 border-secondary    bg-secondary w-[250px] rounded-lg p-3" >
                         {EventConstants?.EventTypes?.map((eventType, index)=>{
                             return(
 
-                                <option value={eventType} key={index} className="text-primary">{eventType}</option>
+                                <option value={eventType} key={index} className=" text-primary     ">{eventType}</option>
                             )
                         })}
                     </select>
@@ -193,15 +203,15 @@ export default function TicketForm({Data, ticket_id, edit}){
                 </div>
                 <div className="flex flex-col gap-4 col-span-2  max-lg:col-span-3 ">
                     <h3>Day</h3>
-                    <input required name="day" defaultValue={Data?.ticket.event.day}  type="date" className="title h-[40px] bg-secondary bg-opacity-0 border-2 p-2 border-secondary border-opacity-20 rounded-md"/>
+                    <input required name="day" defaultValue={Data?.ticket.event.day}  type="date" className="title bg-secondary bg-opacity-5  p-3 border-secondary border-opacity-20 rounded-md"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2 ">
                     <h3>Start Time</h3>
-                    <input required name="start_time" defaultValue={Data?.ticket.event.start_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
+                    <input required name="start_time" defaultValue={Data?.ticket.event.start_time} type="time" className="title bg-secondary bg-opacity-5 border-secondary rounded-lg"/>
                 </div>
                 <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
                     <h3>End Time</h3>
-                    <input required name="end_time" defaultValue={Data?.ticket.event.end_time} type="time" className="title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 rounded-md"/>
+                    <input required name="end_time" defaultValue={Data?.ticket.event.end_time} type="time" className="title bg-secondary bg-opacity-5 p-3 border-secondary rounded-lg"/>
                 </div>
                 <h3 className="font-bold text-xl">Tickets</h3>
                 <div className="grid grid-cols-2 max-md:grid-cols-1 gap-12 w-[100%] col-span-4">
@@ -213,30 +223,38 @@ export default function TicketForm({Data, ticket_id, edit}){
                     
                     
                     
-                    <button type= "button" onClick={insertTicket} className="bg-complementary h-fit w-fit font-bold text-primary p-3 px-7 rounded-xl hover:scale-105 duration-300">+</button>
+                    <button type= "button" onClick={insertTicket} className="bg-complementary h-fit w-fit font-bold text-primary p-4 px-6 rounded-xl hover:scale-105 duration-300 text-md">+</button>
                 </div>
 
-                {/* <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
-                    <h3>Ticket Stock</h3>
-                    <input required name="stock" defaultValue={Data?.ticket.stock} type="number" className="p-2 title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
-                </div>
-                <div className="flex flex-col gap-4 col-span-1 max-lg:col-span-2">
-                    <h3>Ticket Price</h3>
-                    <input required name="price" defaultValue={Data?.ticket.price} step={.01} type="number" className="p-2 title h-[40px] bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20"/>
-                </div> */}
                 <div className="flex flex-col gap-4 col-span-4 ">
-                    <h3>Event Icon</h3>
-                    <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px] rounded-xl"/>
+                    <h3>Event Icon</h3> 
+                    <img required src={eventIcon? URL.createObjectURL(eventIcon): Data? `${import.meta.env.VITE_SERVER}/uploads/icons/${Data.ticket.icon}`:""} className="bg-secondary bg-opacity-0 border-2 border-secondary border-opacity-20 w-[500px] h-[500px] object-cover max-lg:w-[250px] max-lg:h-[250px] rounded-lg"/>
                     <input name="icon" accept="image/*" onChange={(e)=>{setEventIcon(e.target.files[0]); handleChange(e)}} multiple={false} type="file"></input>
 
                     
                 </div>
-                {
-                    Data ?
-                    <button disabled={!changes} type="submit" className={`col-span-4 px-12 p-4 max-lg:px-8 max-lg:text-md  w-fit text-lg bg-complementary bg-gradient-to-b from-complementary to to-complementary2 font-bold text-primary rounded-md ${!changes ? "opacity-30": "hover:scale-105 duration-300"}   `}>Save Changes</button>
-                    :
-                    <button type="submit" className="col-span-4 px-12 p-4 hover:scale-105 duration-300 w-fit text-lg bg-complementary font-bold text-primary rounded-sm max-lg:px-8 max-lg:text-md">Create Ticket</button>
-                }
+                <div className="flex gap-8 col-span-4">
+
+
+                {/* this ticket has not been created yet or has not been created but not yet published */}
+                {  ( Data == null || (Data && !Data?.ticket?.published) ) && (
+                    <>
+                    <button onClick={()=>setCanPublish(false)} type="submit" className="col-span-4 px-20 p-4 hover:scale-105 duration-300 w-fit text-lg bg-secondary bg-opacity-5  rounded-lg max-lg:px-8 max-lg:text-md">Save</button>
+                    <h3 onClick={()=>setDisplayPublishPopup(true)} type="submit" className="col-span-4 px-20 p-4 hover:scale-105 duration-300 w-fit text-lg bg-complementary bg-gradient-to-br from-complementary to to-complementary2 font-bold text-primary rounded-lg max-lg:px-8 max-lg:text-md hover:animate-pulse hover:cursor-pointer">Publish</h3>
+                    </>
+                )}
+                
+                {/* this ticket has been created and published */}
+                {  Data && Data?.ticket.published && (
+                
+                <>
+                <button onClick={()=>setCanPublish(true)} type="submit" className="col-span-4 px-12 p-4 hover:scale-105 duration-300 w-fit text-lg bg-complementary bg-gradient-to-br from-complementary to to-complementary2 font-bold text-primary rounded-lg max-lg:px-8 max-lg:text-md hover:animate-pulse hover:cursor-pointer">Save Changes</button>
+                </>
+                
+                
+                )}
+
+                </div>
                 
             </form>
         </div>

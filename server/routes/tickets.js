@@ -15,7 +15,7 @@ const path = require('path');
 
 //route that allows sellers to create a ticket
 router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
-    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
+    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets, published} = req.body
     
     
 //     res.set('Location', `${process.env.CLIENT_DOMAIN}/seller/verify`);
@@ -49,6 +49,7 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
         const newTicket = new Ticket({
             title,
             description,
+            published,
             // stock,
             // price,
             tickets: tickets,
@@ -74,8 +75,8 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
 
 router.post("/upload/:id",[verifyToken, verifySeller, uploadEventIcons.single("icon")], async(req,res)=>{
     const {id} = req.params
-    console.log(req.file.filename)
     try{
+        console.log(req.file.filename)
         const updatedIcon = await Ticket.findByIdAndUpdate(id, {icon: req.file.filename})
         res.status(200).json({message: "Icon uploaded successfully"})
     }catch(error){
@@ -86,7 +87,7 @@ router.post("/upload/:id",[verifyToken, verifySeller, uploadEventIcons.single("i
 //update the ticket contents
 router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"icon", maxCount:1}])],async(req,res)=>{
     const {id} = req.params
-    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets} = req.body
+    let {title, description,stock,price,line,state,event_type,address,day, start_time, end_time, tickets, published} = req.body
     console.log(price)
     try{
         // console.log(price>40)
@@ -118,6 +119,7 @@ router.put("/:id", [verifyToken, verifySeller ,uploadEventIcons.fields([{name:"i
         if(start_time) matchingTicket.event.start_time = start_time
         if(end_time) matchingTicket.event.end_time = end_time
         if(event_type) matchingTicket.event_type = event_type
+        if(published) matchingTicket.published = published
         if(tickets) matchingTicket.tickets = tickets
         if(req.files["icon"]) matchingTicket.icon = req.files["icon"][0].filename
         await matchingTicket.save()
@@ -248,6 +250,7 @@ router.get("/:id", async(req,res)=>{
     // console.log(id)
     try{
         const TicketData = await Ticket.findById(id)
+        if(!TicketData.published) return res.status(500).json({message: "Ticket is not published!"})
         return res.status(200).json(TicketData)
     }catch(error){
         console.log(error.message)
@@ -259,7 +262,7 @@ router.get("/", async(req,res)=>{
     
     // console.log(id)
     try{
-        const TicketData = await Ticket.find()
+        const TicketData = await Ticket.find({published: true})
         return res.status(200).json(TicketData)
     }catch(error){
         console.log(error.message)
