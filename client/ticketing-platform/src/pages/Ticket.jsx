@@ -175,7 +175,7 @@ export default function Ticket(){
                                             <h3 className="text-md ">{ticket?.quantity}</h3>
                                             <FontAwesomeIcon onClick={()=>changeTicketVariantQuantity(index,1)} className="text-xl hover:text-primary hover:bg-complementary rounded-md duration-300 p-2 border-2 border-secondary border-opacity-0    items-center justify-center" icon={faPlus}></FontAwesomeIcon>
                                         </div>
-                                        <h1 className="text-md text-right line-clamp-3 tracking-widest ">${ticket.price}</h1>
+                                        <h1 className="text-md text-right line-clamp-3 tracking-widest ">${Number(ticket.price).toFixed(2)}</h1>
                                     </div>
 
                                 )
@@ -189,7 +189,7 @@ export default function Ticket(){
                                     ticket.quantity > 0 ?
                                         <div className="flex text-secondary text-opacity-80 justify-between">
                                             <h3 className="text-md ">{ticket.name}</h3>
-                                            <h3 className="text-md tracking-widest">${ticket.price*ticket.quantity} <span className="text-sm  tracking-normal">x{ticket.quantity}</span></h3>
+                                            <h3 className="text-md tracking-widest">${Number(ticket.price*ticket.quantity).toFixed(2)} <span className="text-sm  tracking-normal">x{ticket.quantity}</span></h3>
                                             
                                         </div>:null
                                     
