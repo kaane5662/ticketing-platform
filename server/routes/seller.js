@@ -1,4 +1,5 @@
 const express = require("express")
+const axios = require("axios")
 const router = express.Router()
 const {verifyToken} = require("../jwtMiddleware")
 const {verifySeller} = require("../sellerMiddleware")
@@ -9,8 +10,9 @@ const EventTypes = require("../fields/EventTypes")
 const Tickets = require("../schemas/Ticket")
 const Transactions = require("../schemas/Transactions")
 const mongoose = require("mongoose")
-
+const { PAYPAL_API,getAccessToken } = require("../config/paypal")
 //creates a stripe verification session
+
 // router.get("/verify",verifyToken,async (req,res)=>{
 //     // const {first_name, last_name, business_email, business_name} = req.body
     
@@ -77,29 +79,31 @@ router.post("/connect",verifyToken,async(req,res)=>{
 
 
 //creates a stripe connected account boarding session
-router.get("/boarding", verifyToken,async(req,res)=>{
+router.post("/boarding", verifyToken,async(req,res)=>{
     try{
-
+        const {email, phoneNumber, businessEmail, guestsPerEvent, paypalEmail, name} = req.body
+        
+        if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(businessEmail)) 
+            return res.status(400).json({message:"Incorrect business email format"})
+        if(!/^\+?(\d{1,3})?[-. ]?\(?\d{1,4}\)?[-. ]?\d{1,4}[-. ]?\d{1,9}$/.test(phoneNumber)) 
+            return res.status(400).json({message:"Incorrect phone number format"})
+        if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(paypalEmail)) 
+            return res.status(400).json({message:"Incorrect paypal email format"})
+        if(name.length < 3)
+            return res.status(400).json({message:"Name must be at least 3 characters"})
         const User = await Profile.findById(req.user._id)
-        if(User.stripe_connected_id == null) return res.status(500).json({message: "You need a stripe connected id"})
+        if(!User) return res.status(404).json({message:"User not found"})
+        User.paypal_email = paypalEmail
+        User.business_email = businessEmail
+        User.name = name
+        User.guests_per_event = guestsPerEvent
+        User.phone_number = phoneNumber
+        await User.save()
+        return res.status(201).json({message:"Paypal linked"})
+        // if(User.stripe_connected_id == null) return res.status(500).json({message: "You need a stripe connected id"})
         
         // stripe_connected_id = User.stripe_connected_id || "acct_1OkYStRJr6vSAqtv"
-        try{
-            
-            const accountLink = await stripe.accountLinks.create({
-                account: User.stripe_connected_id,
-                refresh_url: `${process.env.CLIENT_DOMAIN}/boarding`,
-                return_url: `${process.env.CLIENT_DOMAIN}/seller/tickets`,
-                type: 'account_onboarding',
-                collection_options: {
-                    fields: "eventually_due"
-                }   
-            });
-            return res.status(201).json({url:accountLink.url})
-        }catch(error){
-            console.log(error.message)
-            return res.status(500).json(error.message)
-        }
+        
     }catch(error){
         console.log(error.message)
         return res.status(500).json({message: error.message})
