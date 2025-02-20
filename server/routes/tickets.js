@@ -38,9 +38,9 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
         if(tickets.length < 1) return res.status(400).json({message: "Must have at least one ticket"})
         if(description.length < 5) description = ""
         if(address.length < 5) return res.status(500).json({message: "Description is too short"})
-        const matchingProfile = Profile.findById(req.user._id)
+        const matchingProfile = await Profile.findById(req.user._id)
         // console.log(matchingProfile)
-        matchingProfile.paypal_email
+        
         if(!matchingProfile.paypal_email) return res.status(403).json({message:"Must connect a paypal email"})
     
         //tickets validation
