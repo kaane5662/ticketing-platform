@@ -46,7 +46,17 @@ router.put("/", async (req,res)=>{
         res.cookie("token", token, { maxAge: 9000000,secure: process.env.NODE_ENV === "production", httpOnly: true, path: "/", sameSite: 'Lax'  })
         return res.status(200).json("Cookies set")
     }catch(error){
-        console.log(error.message)
+        if (error.name === 'ValidationError') {
+            // Handle Mongoose validation errors
+            const errors = Object.values(error.errors).map(err => ({
+                field: err.path,
+                message: err.message
+            }));
+            return res.status(400).json({
+                error: "Validation Error",
+                details: errors
+            });
+        }
         res.status(500).json({message: error.message})
     }    
 })

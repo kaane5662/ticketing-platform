@@ -2,6 +2,7 @@ const express = require("express")
 const router = express.Router()
 const Ticket = require("../schemas/Ticket")
 const Profile = require("../schemas/Profile")
+const PaypalInvoice = require("../schemas/PaypalInvoice")
 const { verifyToken } = require("../jwtMiddleware")
 const stripe = require("stripe")(process.env.STRIPE_KEY)
 const {uploadEventIcons, uploadEventImages} = require("../uploadMiddleware")
@@ -12,6 +13,8 @@ const generateCheckInCode = require("../helpers/generateCheckInCode")
 const { verifySeller } = require("../sellerMiddleware")
 const fs = require('fs').promises;
 const path = require('path');
+const axios = require("axios")
+const { PAYPAL_API,getAccessToken } = require("../config/paypal")
 
 //route that allows sellers to create a ticket
 router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
@@ -26,7 +29,7 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
     
     // if(matchingProfile.stripe_boarded == null || matchingProfile.stripe_connected_id == null) return res.status(500).json({message: "Not a boarded account"})
     try{
-        // const matchingProfile = Profile.findById(req.user._id)
+        
         // console.log("hi")
         // console.log(req.file)
         // console.log("stock")
@@ -35,15 +38,20 @@ router.post("/" ,[verifyToken, verifySeller],async(req,res)=>{
         if(tickets.length < 1) return res.status(400).json({message: "Must have at least one ticket"})
         if(description.length < 5) description = ""
         if(address.length < 5) return res.status(500).json({message: "Description is too short"})
+        const matchingProfile = Profile.findById(req.user._id)
+        // console.log(matchingProfile)
+        matchingProfile.paypal_email
+        if(!matchingProfile.paypal_email) return res.status(403).json({message:"Must connect a paypal email"})
     
         //tickets validation
         for(let i = 0; i < tickets.length; i++){
             console.log(tickets[i])
             if( typeof(tickets[i].price) != "number" || typeof(tickets[i].stock)!= "number" ) return res.status(400).json({message:`Invalid input type: ${tickets[i].name}`})
-            if(tickets[i].price < 0 || tickets[i].price < .5  ) return res.status(500).json({message: `Invalid price: ${tickets[i].name}`})
+            if(tickets[i].price < 0 || tickets[i].price < .5  ) return res.status(500).json({message: `Invalid price: ${tickets[i].name}`}) 
             if(tickets[i].stock < 0) return res.status(500).json({message: `Invalid stock : ${tickets[i].name}`})
 
         }
+        
         // return;
         // console.log(req.user)
         const newTicket = new Ticket({
@@ -156,11 +164,12 @@ router.post("/purchase/:id",async(req,res)=>{
     const {id} = req.params
     const {tickets} = req.body
     try {
+       
         const matchingTicket = await Ticket.findById(id)
         // console.log(quantity)
         // console.log(matchingTicket)
         const matchingSeller = await Profile.findById(matchingTicket.seller_id)
-        if(matchingSeller.stripe_connected_id == null) return res.status(500).json({message: "Ticket does not have a connected stripe account somehow"})
+        // if(matchingSeller.stripe_connected_id == null) return res.status(500).json({message: "Ticket does not have a connected stripe account somehow"})
         // if(matchingTicket.stock-quantity <= 0) return res.status(500).json({message: "Ticket has run out of stock!"})
         // console.log(matchingTicket.price)
         const ticketVariants = matchingTicket.tickets.length > 0 ? matchingTicket.tickets : [{name: "Entry", price: matchingTicket.price, stock: matchingTicket.stock}]
@@ -185,60 +194,93 @@ router.post("/purchase/:id",async(req,res)=>{
             if(avaliableStock< 0) return res.status(400).json({message: `Not enough stock for: ${ticket.name}`})
             console.log(ticketData)
             totalPrice += ticketData.price * ticket.quantity
-            quantityTax += ticket.quantity*99
+            quantityTax += ticket.quantity*.99
             purchaseData += ticket.name +" x"+ticket.quantity+": $"
             purchaseData += (ticketData.price * ticket.quantity) +", "
         }
         
-        totalPrice *= 100;
+        // totalPrice *= 100;
         let totalTax = Math.floor(totalPrice*.1)
-        const buyerPrice = Math.floor(totalPrice + quantityTax + totalTax)
-        const applicationFee = Math.ceil(quantityTax+totalTax)
-        purchaseData += "Fees: $"+applicationFee/100
+        const buyerPrice = Number(totalPrice + quantityTax + totalTax).toFixed(2)
+        const applicationFee = Number(quantityTax+totalTax).toFixed(2)
+        purchaseData += "Fees: $"+applicationFee
 
         // console.log(ticketMap)
         console.log(tickets)
+        const invoice = new PaypalInvoice({
+            tickets: tickets,
+            fees:applicationFee,
+            amount: totalPrice
+        })
+        invoice.save()
+        console.log(invoice)
         
-
-        const session = await stripe.checkout.sessions.create({
-            success_url: `${process.env.CLIENT_DOMAIN}/tickets`,
-            line_items: [
-                {price_data: {
-                    currency: 'usd',
-                    product_data: {
-                      name: matchingTicket.title,
-                      description: purchaseData + "\n" ,
+        const accessToken = await getAccessToken()
+        const validTickets= tickets.filter((ticket)=>ticket.quantity > 0)
+        const items = validTickets.map((ticket,i)=>{ return {name:ticket.name, unit_amount: {currency_code:"USD", value:ticket.price}, quantity:ticket.quantity}})
+        items.push({
+            name:"Fees",
+            unit_amount: {currency_code:"USD", value:applicationFee},
+            quantity:1
+        })
+        // console.log(items)
+        const order = await axios.post(`${PAYPAL_API}/v2/checkout/orders`, {
+            intent: "CAPTURE",
+            purchase_units: [
+                {
+                    amount: {
+                        currency_code: "USD",
+                        value: buyerPrice,// Modify as needed
+                        "breakdown": {
+                            "item_total": {
+                                "currency_code": "USD",
+                                "value": buyerPrice
+                            }
+                        }
                     },
-                    unit_amount: buyerPrice, // Amount in cents (e.g., $10.00)
-                  }
-                  , quantity: 1},
+                    
+                    custom_id: matchingTicket._id,
+                    invoice_id: invoice._id,
+                    items
+                    // items: [{
+                    //     name: 'Entry',
+                        
+                    //     "unit_amount": {
+                    //         "currency_code": "USD",
+                    //         "value": 24.44
+                    //     },
+                    //     quantity: 1,
+                        
+                    //     sku: 'sku0',
+                        
+                    // }]
+            
+                }
             ],
-            mode: 'payment',
-            payment_intent_data: {
-                application_fee_amount: applicationFee, // calculate your 
-                transfer_data: {
-                    destination: matchingSeller.stripe_connected_id,
-                
-                },
-            },
-            metadata: {
-                ticket_id: id,
-                ticket_title: matchingTicket.title,
-                day: matchingTicket.event.day,
-                tickets: JSON.stringify(tickets),
-                fees: applicationFee,
-                ticket_address: matchingTicket.address
-                // ticket_map: JSON.stringify(ticketsMap)
-                // quantity: quantity
+           
+            application_context: {
+                brand_name:"SwftT LLC",
+                return_url: `${process.env.CLIENT_DOMAIN}`,
+                cancel_url: `${process.env.CLIENT_DOMAIN}/ticket/${id}`,
+                user_action: "PAY_NOW",
+                // landing_page: "BILLING",
+                landing_page: 'NO_PREFERENCE', // Guest checkout
+            }
+        }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json"
             }
         });
-
         
+        
+        const url = order.data.links.find((link)=>link.rel == "approve")
 
-        return res.status(201).json({url: session.url})
+        console.log(url)
+        return res.status(201).json({url: url.href})
 
     }catch(error){
-        console.log(error.message)
+        console.log(error.response?.data)
         return res.status(500).json({message: error.message})
     }
 })
@@ -265,7 +307,7 @@ router.get("/", async(req,res)=>{
         const TicketData = await Ticket.find({published: true})
         return res.status(200).json(TicketData)
     }catch(error){
-        console.log(error.message)
+        console.log(error.response)
         return res.status(500).json({message: error.message})
     }
 })
@@ -299,6 +341,7 @@ router.post("/checkin/:id", async(req,res)=>{
     //warning: no check to see if the checking user is actually pat of the group
     try{
         // console.log(ticket_number, id)
+        
         const matchingTicketNumber = await Transactions.findOne({ticket_id:id, ticket_number})
         if(matchingTicketNumber == null ) return res.status(500).json({message: "Invalid code"})
         
@@ -308,7 +351,7 @@ router.post("/checkin/:id", async(req,res)=>{
         return res.status(201).json({message: `Check in success: ${matchingTicketNumber?.ticket_title || "Entry"}`})
         
     }catch(error){
-        console.log(error.message)
+        console.log(error)
         return res.status(500).json({message:error.message})
     }
     

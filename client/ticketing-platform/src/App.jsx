@@ -23,6 +23,9 @@ import Landing from "./pages/Landing"
 import TOS from "./pages/TOS"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
+import ConnectPaypal from "./pages/ConnectPaypal"
+import BoardingApproval from "./pages/BoardingApproval"
+
 
 export default function App() {
   // const location = useLocation()
@@ -87,6 +90,8 @@ export default function App() {
         <Route path="/login" Component={Login}></Route>
         <Route path="/join" Component={SellerSignUp}></Route>
         <Route path="/checkseller" Component={CheckSeller}></Route>
+        <Route path="/boarding2" Component={ConnectPaypal}></Route>
+        <Route path="/approving" Component={BoardingApproval}></Route>
         <Route path="/verify" Component={VerifySeller}></Route>
         <Route path="/boarding" Component={BoardSeller}></Route>
         <Route path = "/seller/create" Component={CreateTicket  }></Route>

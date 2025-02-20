@@ -23,12 +23,13 @@ export default function SellerSidebar(){
     }
 
     const updateStripeAccount = ()=>{
-        axios.get(`${import.meta.env.VITE_SERVER}/seller/update`,{withCredentials:true}).then((response)=>{
-            window.location.href = response.data.url
+        navigate("/boarding2")
+        // axios.get(`${import.meta.env.VITE_SERVER}/seller/update`,{withCredentials:true}).then((response)=>{
+        //     window.location.href = response.data.url
            
-        }).catch((error)=>{
-            console.log(error)
-        })
+        // }).catch((error)=>{
+        //     console.log(error)
+        // })
     }
 
 

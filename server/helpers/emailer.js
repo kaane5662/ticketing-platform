@@ -134,6 +134,37 @@ const sendStripeBoarded = async(User)=>{
         `
     })
 }
+const sendPaypalBoarded = async(User)=>{
+    await transporter.sendMail({
+        from: process.env.EMAIL_DOMAIN,
+        to: User.email,
+        subject: "Successfully Boarded as a Seller",
+        html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Identity Verification Unsuccessful</title>
+        </head>
+        <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Account Boarded</h2>
+                <p>Dear User,</p>
+                <p>
+                    Your paypal account has successfully been boarded.
+                </p>
+                <p>
+                    You are now eligible to create and sell tickets and transfer your profits to your paypal account.
+                </p>
+                <p>Best Regards,<br>SwftT</p>
+            </div>
+        </body>
+        </html>
+        
+        `
+    })
+}
 
 const sendTicketConfirmation = async(email, qrCodeData, ticket_title, tickets, total, fees, address)=>{
     // console.log(qrCodes)
@@ -191,11 +222,11 @@ const sendTicketConfirmation = async(email, qrCodeData, ticket_title, tickets, t
                     ${ticketGrid}
                     <tr>
                         <td style = "" align = "left" width = "50%">Fees</td>
-                        <td style = "" align = "right" width = "50%">$${fees/100}</td>
+                        <td style = "" align = "right" width = "50%">$${fees}</td>
                     </tr>
                     <tr>
                         <td style = "font-weight: bold" align = "left" width = "50%">Total</td>
-                        <td style = "font-weight: bold" align = "right" width = "50%">$${total/100}</td>
+                        <td style = "font-weight: bold" align = "right" width = "50%">$${total}</td>
                     </tr>
                 </table>
                 <p  style = "font-weight:bold; text-align: center; ">${address}</p>
@@ -290,6 +321,46 @@ const sendPasswordResetInfo = async(User, token)=>{
         `
     })
 }
+const sendSupportUserConfirmation = async(User, token)=>{
+    // console.log(qrCodes)
+    // let qrCodeImagesHTML = '';
+    // qrCodes.forEach(qrCodeDataURL => {
+    //     qrCodeImagesHTML += `<img style="width:500px; height:500px" src="${qrCodeDataURL}" alt="QR Code"></img><br>`;
+    // });
+    // console.log(qrCodeImagesHTML)
+    await transporter.sendMail({
+        from: process.env.EMAIL_DOMAIN,
+        to: User.email,
+        subject: `Password Reset Request`,
+        html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Confirmation Email</title>
+        </head>
+        <body>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Login in to support</h2>
+                <p>Dear User,</p>
+                <p>
+                    You are a valid support user
+                </p>
+                <p>
+                    Click the following link to create your support session <a href = ${process.env.SUPPORT_DOMAIN}/verify?token=${token}>here</a>
+                    
+                </p>
+                
+                
+                <p>Best Regards,<br>SwftT</p>
+            </div>
+        </body>
+        </html>
+        
+        `
+    })
+}
 
 
-module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation, sendSignUpConfirmation, sendPasswordResetInfo}
+module.exports = {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation, sendSignUpConfirmation, sendPasswordResetInfo, sendSupportUserConfirmation, sendPaypalBoarded}

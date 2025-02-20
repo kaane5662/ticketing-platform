@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
+const Support = require("./schemas/Support")
 
 const generateToken = (user) => {
     
@@ -29,8 +30,9 @@ const verifyToken = (req, res, next) => {
     // req.user = {}
     // req.user._id = "65d5428edf2c053b57e72ef2"
     // return next()
+    // console.log(req.cookies)
     const token = req.cookies?.token;
-    // console.log(token)
+    console.log(token)
     if (!token) {
         // console.log("Middleware do you work!")
         return res.status(401).json({ url: '/login' });
@@ -79,8 +81,34 @@ const verifyResetToken = (req, res, next) => {
     }
 
 }
+const verifySupportToken = async(req, res, next) => {
+    const token = req.cookies?.token;
+    // console.log(token)
+    if (!token) {
+        // console.log("Middleware do you work!")
+        return res.status(401).json({ message: 'No reset token found' });
+        // return res.redirect(`${process.env.CLIENT_DOMAIN}/login`)
+    
+    }
+
+    try{
+        const decoded = jwt.verify(token, process.env.SECRET_JWT);
+        // console.log(decoded)
+        req.user = decoded;
+        // console.log(req.user)
+        const valid = await Support.findOne({email: decoded.email})
+        console.log("Balid support",valid)
+        if(!valid) return res.status(403).json({url:"/login"})
+        next(); 
+    }catch(err){
+        console.log(err)
+        // res.status(401).json({ message: 'Token is not valid' });
+        return res.status(403).json({url:`/login`});
+    }
+
+}
 
 
 
 
-module.exports = {generateToken, verifyToken, generateAuthToken, verifyResetToken}
+module.exports = {generateToken, verifyToken, generateAuthToken, verifyResetToken, verifySupportToken}

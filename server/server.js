@@ -11,7 +11,7 @@ require("dotenv").config()
 const stripe = require("stripe")(process.env.STRIPE_KEY)
 const cookieParser = require('cookie-parser');
 const {sendStripeVerifcationProcessing, sendStripeVerificationVerified, sendStripeVerificationDenied, sendStripeBoarded, sendTicketConfirmation} = require("./helpers/emailer")
-
+const {verifyWebhook,transferFundsToSeller} = require("./config/paypal")
 
 
 //authenication stuff
@@ -25,6 +25,8 @@ const Profile = require("./schemas/Profile")
 const generateTicketNumber = require("./helpers/generateTicketNumber")
 const Ticket = require("./schemas/Ticket")
 const { compareSync } = require("bcryptjs")
+const PaypalInvoice = require("./schemas/PaypalInvoice")
+
 // app.use(session({
 //     secret: 'your-secret-key', // Replace with a strong, randomly generated string
 //     resave: false,
@@ -58,9 +60,17 @@ mongoose.connect(process.env.MONGO_URL, {
 
 
 
+const allowedOrigins = [process.env.CLIENT_DOMAIN, process.env.SUPPORT_DOMAIN];
 
 const corsOptions = {
-    origin: process.env.CLIENT_DOMAIN,
+    origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+    } else {
+        callback(new Error('Not allowed by CORS'));
+    }
+    },
+    
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,  // Enable cookies and authentication headers
 };
@@ -261,13 +271,120 @@ app.post("/webhook/connect",express.raw({ type: 'application/json' }) ,async (re
 })
 
 
-
 app.use(express.json())
+
+app.post("/webhook/paypal" ,async (req, res)=>{
+    
+    // if (!await verifyWebhook(req)) {
+    //     return res.status(400).send("Invalid webhook signature");
+    // }
+    try{
+
+        const webhookEvent = await req.body;
+        // console.log(webhookEvent)
+        if (webhookEvent.event_type === "CHECKOUT.ORDER.APPROVED") {
+            const purchase = webhookEvent.resource.purchase_units[0]
+            const payer = webhookEvent.resource.payer
+            console.log(purchase)
+            const ticketId = purchase.custom_id
+    
+            const qrData = []
+            let matchingTicket = await Ticket.findById(ticketId)
+            let ticketOwner = await Profile.findById(matchingTicket.seller_id)
+            const date = new Date(matchingTicket.event.day)
+            console.log(date)
+            let currentDate = new Date();
+            let invoice = await PaypalInvoice.findById(purchase.invoice_id)
+            const userTickets = invoice.tickets
+            
+            
+            const ticketsMap = {}
+            //asign a map for the tickets metadata
+            userTickets.forEach((ticket, index)=>{
+                // console.log(ticketVariant)
+                ticketsMap[ticket.name] =ticket
+            })
+            // console.log("Map: " +ticketsMap)
+            // Add one day to the current date
+            currentDate.setDate(currentDate.getDate() + 1);
+            console.log(matchingTicket.tickets)
+            for(let i = 0; i < matchingTicket?.tickets?.length; i++){
+                //find matching ticket from metadata
+                const ticketData = ticketsMap[matchingTicket.tickets[i].name]
+                // console.log("Mapped Data:",ticketData)
+                // console.log("Current Ticket:",matchingTicket.tickets[i])
+                
+                if(!ticketData) continue
+                
+                
+                for(let j = 0; j < ticketData.quantity; j++){
+                    if(matchingTicket.tickets[i].stock >0) matchingTicket.tickets[i].stock -= 1
+                    matchingTicket.tickets[i].sold += 1; 
+                    const generateRandomTicketNumber = generateTicketNumber();
+                    const newTransaction = new Transactions({
+                        email: payer.email_address,
+                        ticket_id: ticketId,
+                        expiration_date: currentDate,
+                        amount: matchingTicket.tickets[i].price,
+                        ticket_number: generateRandomTicketNumber,
+                        ticket_title: matchingTicket.tickets[i].name
+                    })
+                    
+                    const qrGen =  qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
+                    qrData.push({content: qrGen, ticket_title: matchingTicket.tickets[i].name, quantity: j+1})
+                    await newTransaction.save()
+                }
+                delete ticketsMap[matchingTicket.tickets[i].name]
+            }
+            //there are some keys remaning, tickets either got deleted during processing or renamed
+            const remainingKeys = Object.keys(ticketsMap)
+            // console.log(remainingKeys)
+            // console.log(ticketsMap)
+            for(let i = 0; i < remainingKeys.length; i++){
+                matchingTicket.stock -= 1;
+                const key = remainingKeys[i];
+                for(let j = 0; j< ticketsMap[key].quantity; j++){
+                    const generateRandomTicketNumber = generateTicketNumber();
+                    const newTransaction = new Transactions({
+                        email: customer_details.email,
+                        ticket_id: metadata.ticket_id,
+                        expiration_date: currentDate,
+                        amount: ticketsMap[key].price,
+                        ticket_number: generateRandomTicketNumber,
+                        ticket_title: key
+                    })
+                    
+                    const qrGen = qr.imageSync(generateRandomTicketNumber, { type: 'png', size:20 })
+                    qrData.push({content: qrGen, ticket_title: key, quantity: j+1})
+                    await newTransaction.save()
+                }
+            }
+            await matchingTicket.save()
+            // await Ticket.findByIdAndUpdate(metadata.ticket_id,{$inc: {stock: -metadata.quantity}})
+            console.log(userTickets)
+            console.log(qrData)
+            await sendTicketConfirmation(payer.email_address,qrData,matchingTicket.title,userTickets,invoice.amount+invoice.fees,invoice.fees,matchingTicket.address)
+            
+            
+            // Transfer funds to seller
+            await transferFundsToSeller(invoice.amount,ticketOwner.paypal_email);
+        }
+    
+        return res.status(200).send(    )
+    }catch(error){
+        return res.status(500).json({error:error.message})
+    }
+
+
+})
+
+
 
 //routes
 app.use("/profiles", require("./routes/profiles"))
 app.use("/tickets", require("./routes/tickets"))
 app.use("/seller", require("./routes/seller"))
+app.use("/support", require("./routes/support"))
 
 app.post("/purchase", async (req, res)=>{
     const {quantity} = req.body
