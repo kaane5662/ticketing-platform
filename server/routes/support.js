@@ -56,6 +56,16 @@ router.post("/approve",verifySupportToken,async(req,res)=>{
         return res.status(500).json({message:error.message})
     }
 })
+router.get("/approve",verifySupportToken,async(req,res)=>{
+    try{
+        const {id} = req.body
+        const profile = await Profile.findById(id)
+        return res.status(200).json(profile)
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({message:error.message})
+    }
+})
 router.post("/login",async(req,res)=>{
     try{
         const {email} = req.body

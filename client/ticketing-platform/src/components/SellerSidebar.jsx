@@ -1,6 +1,6 @@
-import { faCartShopping, faColonSign, faColumns, faDoorClosed, faGripVertical, faMoneyBill, faNavicon, faRightFromBracket, faSquarePlus, faTicketSimple, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faColonSign, faColumns, faDoorClosed, faGripVertical, faMoneyBill, faNavicon, faPerson, faRightFromBracket, faSquarePlus, faTicketSimple, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect,useState } from "react";
 
@@ -9,7 +9,21 @@ export default function SellerSidebar(){
 
     const [Profile, setProfile] = useState()
     const [navbarActive, setNavbarActive] = useState(true)
+    const location = useLocation()
+    const [isMaxMd, setIsMaxMd] = useState(window.innerWidth < 768);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMaxMd(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
 
     const getAuthData = ()=>{
@@ -32,6 +46,9 @@ export default function SellerSidebar(){
         // })
     }
 
+    useEffect(()=>{
+        isMaxMd ? setNavbarActive(false):setNavbarActive(true)
+    },[location.pathname])
 
     const createDashboardLink = ()=>{
         axios.get(`${import.meta.env.VITE_SERVER}/seller/dashboard`,{withCredentials:true}).then((response)=>{
@@ -91,6 +108,10 @@ export default function SellerSidebar(){
                             <div onClick={updateStripeAccount} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
                                 <FontAwesomeIcon className="w-5" icon={faColumns}></FontAwesomeIcon>
                                 <h3 className=" text-sm">Update Account</h3>
+                            </div>
+                            <div onClick={()=>navigate("/support")} className="flex gap-3 items-center hover:scale-105 duration-300 hover:cursor-pointer ">
+                                <FontAwesomeIcon className="w-5" icon={faUser}></FontAwesomeIcon>
+                                <h3 className=" text-sm">Contact Support</h3>
                             </div>
                             
                             

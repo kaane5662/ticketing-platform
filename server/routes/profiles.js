@@ -140,8 +140,13 @@ router.get('/auth/google/callback', passport.authenticate('google', { failureRed
 }
 );
 
-router.get("/", (req,res)=>{
-
+router.get("/", verifyToken,async(req,res)=>{
+    try{
+        const user = await Profile.findById(req.user._id)
+        return res.status(200).json(user)
+    }catch(error){
+        res.status(500).json({message: error.message})
+    }
 })
 
 

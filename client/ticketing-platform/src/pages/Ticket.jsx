@@ -5,7 +5,7 @@ import Failure from "../components/Failure"
 import { useEffect, useState } from "react"
 import Popup from "../components/Popup"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowLeft, faCheck, faLocation, faLocationPin, faMapLocationDot, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
+import { faArrowLeft, faCheck, faExclamation, faExclamationCircle, faLocation, faLocationPin, faMapLocationDot, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { useParams } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
@@ -160,10 +160,9 @@ export default function Ticket(){
                         
                         <h1 className="font-bold text-xl mt-8 ">Overview</h1>
                         <h3 className="text-md max-md:text-sm " style={{whiteSpace: 'pre-line'   }}>{Ticket.description }</h3>
+                        <p className="text-slate-400 text-xs flex gap-2"><FontAwesomeIcon icon={faExclamationCircle} /> In order to checkout without a Paypal account, click "Pay with Debit or Credit Card", then add your email, then in the checkout page disable the checkbox for "Save info & create your PayPal account"</p>
         
-                    
                         <h1 className="text-2xl font-bold mt-8 "> Tickets</h1>
-                    
                         <div className="justify-center  items-center flex flex-col gap-4 w-[100%]">
                             {/* ticket prices display */}
                             {tickets.map((ticket, index)=>{

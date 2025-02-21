@@ -25,6 +25,7 @@ import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
 import ConnectPaypal from "./pages/ConnectPaypal"
 import BoardingApproval from "./pages/BoardingApproval"
+import ContactUs from "./pages/ContactUs"
 
 
 export default function App() {
@@ -90,6 +91,7 @@ export default function App() {
         <Route path="/login" Component={Login}></Route>
         <Route path="/join" Component={SellerSignUp}></Route>
         <Route path="/checkseller" Component={CheckSeller}></Route>
+        <Route path="/support" Component={ContactUs}></Route>
         <Route path="/boarding2" Component={ConnectPaypal}></Route>
         <Route path="/approving" Component={BoardingApproval}></Route>
         <Route path="/verify" Component={VerifySeller}></Route>
