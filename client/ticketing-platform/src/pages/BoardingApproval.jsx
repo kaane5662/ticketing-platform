@@ -1,9 +1,27 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast, ToastContainer } from "react-toastify"
 
 export default function BoardingApproval(){
+    const navigate = useNavigate()
+    const boarded = ()=>{
+
+        axios.get(`${import.meta.env.VITE_SERVER}/profiles`,{withCredentials:true}).then((response)=>{
+            const profile = response.data
+            if(profile?.seller_approved) navigate("/seller/tickets")
+            
+        }).catch((error)=>{
+            console.log(error)
+            if( error.response.status == 401 || error.response.status == 403) navigate("/login", {replace:true})
+            toast.error(error.response?.data?.message || "An unexpected error has occured   ")
+        })
+
+    }
+
+    useEffect(()=>{
+        boarded()
+    },[])
     
     return(
         <main className=" bg-primary h-screen text-secondary flex items-center justify-center  font-poppins">

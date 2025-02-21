@@ -109,6 +109,7 @@ router.post("/boarding", verifyToken,async(req,res)=>{
         return res.status(500).json({message: error.message})
     }
 })
+
 // //protected route       
 // router.get("/check", verifyToken,async (req,res)=>{
 //     const User = await Profile.findById(req.user._id)

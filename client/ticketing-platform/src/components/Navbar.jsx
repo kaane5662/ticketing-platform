@@ -17,7 +17,7 @@ export default function Navbar(){
         axios.get(`${import.meta.env.VITE_SERVER}/profiles/auth`,{withCredentials:true}).then((response)=>{
             console.log(response.data)
             setProfile(response.data)
-            setTicket(response.data)
+            // setTicket(response.data)
         }).catch((error)=>{
             console.log(error)
         })
@@ -58,6 +58,7 @@ export default function Navbar(){
                 <div className="right flex gap-8 font-poppins items-center max-lg:hidden ">
                     {/* <h3  className="text-md hover:underline">{Profile?.email.split("@")[0]}</h3> */}
                     <Link onClick={mobileHide} to="/tickets" className="text-md p-2 hover:border-t-2 hover:border-complementary">Explore Tickets</Link>
+                    <Link onClick={mobileHide} to="/support" className="text-md p-2 hover:border-t-2 hover:border-complementary">Contact Support</Link>
                     {Profile? 
                         <>
                         <h3 onClick={handleLogOut} className="text-md p-2 hover:border-t-2 hover:border-complementary hover:cursor-pointer">Log out</h3>
@@ -84,6 +85,7 @@ export default function Navbar(){
                     <div className="flex flex-col gap-8 h-screen absolute top-0 py-10 bg-primary w-[50%] px-4 border-opacity-20 border-secondary border-r transition duration-300 z-20">
                         <img onClick={()=>navigate("/")} src="SwftTLogo.png" className="h-20 max-lg:h-10 object-scale-down "></img> 
                         <Link onClick={mobileHide} to="/tickets" className="text-sm hover:underline">Explore Tickets</Link>
+                        <Link onClick={mobileHide} to="/support" className="text-sm hover:underline">Contact Support</Link>
                         {Profile? 
                             <>
                             <h3 onClick={handleLogOut}  className="text-sm hover:cursor-pointer hover:underline">Log out</h3>
