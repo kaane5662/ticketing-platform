@@ -10,38 +10,16 @@ import { useParams } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import 'react-toastify/dist/ReactToastify.css';
 
-const photos = ["concert1.jpg", "concert2.jpeg", "concert3.jpg", "concert4.jpg", "concert5.jpg"]
 
 export default function Ticket(){
 
-    const [popUpActive, setPopUpActice] = useState(false)
-    const [success, setSuccess] = useState(false)
-    const [Photos, setPhotos] = useState(photos)
+    
     const [total, setTotal] = useState(0)
-    const [selected, setSelected] = useState(photos[0])
+  
     const {id} = useParams()
-    const [price, setPrice] = useState(25.99)
-    const [Ticket, setTicket] = useState({
-        title: "Very Cool House Party at Birminghan John LC",
-        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        stock: 100,
-        seller_id: "seller123",
-        price: 25.99,
-        published: true,
-        icon: "ticket-icon.png",
-        checkin_code: 123456,
-        pictures: ["image1.jpg", "image2.jpg"],
-        event_type: "Concert",
-        tags: ["music", "live", "concert"],
-        address: "3235, Emmons Avenue, Brooklyn, Kings County, New York, 11235, United States",
-        event: {
-            start_time: "2024-02-20T08:00:00",
-            end_time: "2024-02-20T12:00:00",
-            day: "2024-02-20"
-        }
-    })
-    const [tickets,setTickets] = useState([{ name: "Adult", price: 20, stock: 100, quantity:0 },
-    { name: "Child", price: 10, stock: 50, quantity:0 },{ name: "VIP", price: 30, stock: 50, quantity:0 },{ name: "Special", price: 50, stock: 50, quantity:0 }])
+
+    const [Ticket, setTicket] = useState(null)
+    const [tickets,setTickets] = useState([])
 
     const handlePurchase = ()=>{
         axios.post(`${import.meta.env.VITE_SERVER}/tickets/purchase/${id}`,{tickets}).then((response)=>{
@@ -144,7 +122,7 @@ export default function Ticket(){
             viewport={{ once: true }}
             className="my-24 max-md:my-8 gap-4 flex max-lg:gap-4 flex-col w-[80%] max-lg:w-[90%]">
             
-                <div className="flex justify-center items-center gap-4 max-lg:gap-4 flex-col">
+                {Ticket &&(<div className="flex justify-center items-center gap-4 max-lg:gap-4 flex-col">
 
                     <img src={`${import.meta.env.VITE_SERVER}/uploads/icons/${Ticket.icon}`} className="flex self-center col-span-2 h-[450px] w-[70%] bg-complementary object-cover max-lg:h-[220px] max-lg:w-[95%]  rounded-xl"/>
 
@@ -209,7 +187,7 @@ export default function Ticket(){
                         
                     </div>
                     
-                </div>
+                </div>)}
 
                 
             </motion.div>

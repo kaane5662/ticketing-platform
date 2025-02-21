@@ -51,7 +51,7 @@ export default function Navbar(){
             <div className="flex justify-between lg:items-center   fixed w-[100%] p-2 max-lg:p-2 bg-primary ">
 
                 
-                <img onClick={()=>navigate("/")} src="SwftTLogo.png" className="h-20 max-lg:h-10 px-4 "></img>  
+                <img onClick={()=>navigate("/")} src="/SwftTLogo.png" className="h-20 max-lg:h-10 px-4 "></img>  
                     
                     
                 
