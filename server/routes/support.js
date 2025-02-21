@@ -1,7 +1,7 @@
 const express = require("express")
 const axios = require("axios")
 const router = express.Router()
-const {verifySupportToken, generateAuthToken,verifyResetToken} = require("../jwtMiddleware")
+const {verifySupportToken, generateAuthToken,verifyResetToken, generateToken} = require("../jwtMiddleware")
 const {verifySeller} = require("../sellerMiddleware")
 const Profile = require("../schemas/Profile")
 require("dotenv").config()
@@ -71,7 +71,7 @@ router.post("/login",async(req,res)=>{
         const {email} = req.body
         const valid = await Support.findOne({email:email})
         if(!valid) return res.status(401).json({message:"Email account not provisioned to use support"})
-        const token = generateAuthToken(valid)
+        const token = generateToken(valid)
         await sendSupportUserConfirmation(valid,token)
         return res.status(200).json({message:"Account confirmation sent"})
     }catch(error){
