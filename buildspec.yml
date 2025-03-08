@@ -7,13 +7,15 @@ phases:
       - cd server
       - npm install
       - npm run build # if you have a build step
-  post_build:
-    commands:
-      - echo Build completed on `date`
+      - cd ..
+      - mkdir -p build
+      - cp -R server/* build/
+      - cd build
+      - zip -r ../application.zip .
+      - cd ..
+      - echo "Created ZIP file with Express app at root"
+      - ls -la application.zip
 
 artifacts:
-  base-directory: 'server'
   files:
-    - '**/*'
-  discard-paths: no
-  format: ZIP
+    - application.zip
