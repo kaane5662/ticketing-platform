@@ -12,7 +12,8 @@ phases:
       - echo Build completed on `date`
 
 artifacts:
+  artifacts:
+  base-directory: 'server'
   files:
-    - server/**/*
-    - .ebextensions/**/*
-    - .platform/**/*
+    - '**/*'
+  discard-paths: no
