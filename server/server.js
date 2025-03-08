@@ -281,7 +281,7 @@ app.post("/webhook/paypal" ,async (req, res)=>{
     try{
 
         const webhookEvent = await req.body;
-        // console.log(webhookEvent)
+        console.log(webhookEvent)
         if (webhookEvent.event_type === "CHECKOUT.ORDER.APPROVED") {
             const purchase = webhookEvent.resource.purchase_units[0]
             const payer = webhookEvent.resource.payer

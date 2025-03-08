@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: latest
+    commands:
+      - cd server  # Move into the server folder
+      - echo "Installing dependenices..."
+      - npm install
+  build:
+    commands:
+      - echo "Zipping the server directory..."
+      - cd ..
+      - zip -r deploy.zip server  # Zip ONLY the server folder
+
+artifacts:
+  files:
+    - deploy.zip
+  discard-paths: no

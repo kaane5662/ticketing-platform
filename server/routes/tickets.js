@@ -200,17 +200,18 @@ router.post("/purchase/:id",async(req,res)=>{
         }
         
         // totalPrice *= 100;
+        
         let totalTax = Math.floor(totalPrice*.1)
         const buyerPrice = Number(totalPrice + quantityTax + totalTax).toFixed(2)
         const applicationFee = Number(quantityTax+totalTax).toFixed(2)
         purchaseData += "Fees: $"+applicationFee
 
         // console.log(ticketMap)
-        console.log(tickets)
+        // console.log(tickets)
         const invoice = new PaypalInvoice({
             tickets: tickets,
             fees:applicationFee,
-            amount: totalPrice
+            amount: Number(totalPrice).toFixed(2)
         })
         invoice.save()
         console.log(invoice)
