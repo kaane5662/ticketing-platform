@@ -16,3 +16,4 @@ artifacts:
   files:
     - '**/*'
   discard-paths: no
+  format: ZIP
