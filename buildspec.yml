@@ -6,7 +6,7 @@ phases:
       - echo Build started on `date`
       - cd server
       - npm install
-      - npm run build # if you have a build step
+      - echo "Dependencies installed successfully"
       - cd ..
       - mkdir -p build
       - cp -R server/* build/
