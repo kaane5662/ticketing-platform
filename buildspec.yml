@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cd server
+      - npm i
+      - echo "web: npm start" > Procfile
+      - zip -r ../application.zip *
+      - cd ..
+
+artifacts:
+  files:
+    - application.zip
